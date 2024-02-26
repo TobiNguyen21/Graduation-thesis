@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="google" value="notranslate">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blockly for C</title>
+    <link rel="icon" type="image/x-icon" href="images/ico/favicon.png">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/prettify.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/jquery.terminal.css">
+</head>
+<body onload="start()">
+    <div class="header">
+        <nav class="navbar navbar-default">
+            <div class="collapse navbar-collapse">
+                <a class="navbar-brand" href="index.html" style="color: seagreen;"><b>Blockly for C</b></a>
+                <input id="program_name" class="navbar-brand program_name" type="text" value=">> index.c">
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default navbar-btn" onclick="discard()">
+                            <span class="glyphicon glyphicon-trash"></span> Clear
+                        </button>
+                        <button type="button" class="btn btn-default navbar-btn" onclick="downloadCode()">
+                            <span class="glyphicon glyphicon-download-alt"></span> Download code
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div id="main-wrapper" class="row">
+            <div class="col-xs-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Workspace</h3>
+                    </div>
+                    <div id="blocklyDiv" class="panel-body"></div>
+                </div>
+            </div>
+
+            <!-- Toolbox -->
+            <xml id="toolbox">
+            </xml>
+
+            <!-- Code C (generate) -->
+            <div class="col-xs-4">
+                <div id="code-wrapper" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Code - <a style=color:blue;text-decoration:underline
+                                href="https://www.onlinegdb.com/online_c_compiler" target="_blank">Online Compiler</a>
+                        </h3>
+                    </div>
+                    <pre id="code" class="panel-body pre-scrollable"></pre>
+                </div>
+            </div>
+
+            <!-- Console  -->
+            <div class="col-xs-12">
+                <div id="terminal-wrapper" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Console</h3>
+                    </div>
+                    <div class="panel-body" id="terminal"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer id="footer" role="contentinfo">
+    </footer>
+
+    <!-- Blockly library -->
+    <script type=text/javascript src=blockly_compressed.js></script>
+
+    <script type=text/javascript src=msg/en.js></script>
+    <script type=text/javascript src=js/jquery-2.1.1.min.js></script>
+    <script type=text/javascript src=js/bootstrap.min.js></script>
+    <script type=text/javascript src=js/code.js></script>
+    <script type=text/javascript src=js/FileSaver.js></script>
+    <script type=text/javascript src=js/prettify.js></script>
+    <script type=text/javascript src=js/jquery.mousewheel.min.js></script>
+    <script type="text/javascript" src="js/jquery.terminal-0.8.8.min.js"></script>
+</body>
+</html>
