@@ -45,6 +45,18 @@
 
             <!-- Toolbox -->
             <xml id="toolbox">
+                <category name="Variables">
+                    <block type="variables_declare">
+                        <value name="VALUE">
+                        </value>
+                    </block>
+                    <block type="variables_get"></block>
+                    <block type="variables_set">
+                        <value name="VALUE">
+                        </value>
+                    </block>
+                    <block type="library_stdio_text_char"></block>
+                </category>
             </xml>
 
             <!-- Code C (generate) -->
@@ -77,7 +89,7 @@
 
     <!-- Blockly library -->
     <script type=text/javascript src=blockly_compressed.js></script>
-
+    <script type=text/javascript src=blocks/index.js></script>
     <script type=text/javascript src=msg/en.js></script>
     <script type=text/javascript src=js/jquery-2.1.1.min.js></script>
     <script type=text/javascript src=js/bootstrap.min.js></script>
