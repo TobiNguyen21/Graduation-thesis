@@ -1,11 +1,11 @@
 const rootStdio = "[blocks][stdio]";
 
 /**
- * Variables - Char block 
+ * [Toolbox][Variables] - Char block 
  */
 Blockly.Blocks.library_stdio_text_char = {
     init: function () {
-        console.log(`${rootStdio} library_stdio_text_char`);
+        if (LOG_NAME_BLOCK) console.log(`${rootStdio} library_stdio_text_char`);
         this.setHelpUrl(Blockly.Msg.TEXT_CHAR);
         this.setColour(90);
         this.appendDummyInput().appendField(this.newQuote_(!0)).appendField(new Blockly.FieldTextInput(""), "CHAR").appendField(this.newQuote_(!1));
