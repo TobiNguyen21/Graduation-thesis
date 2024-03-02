@@ -44,8 +44,8 @@
             </div>
 
             <!-- Toolbox -->
-            <xml id="toolbox">
-            </xml>
+            <!-- Toolbox -->
+            <div id="addToolBox"></div>
 
             <!-- Code C (generate) -->
             <div class="col-xs-4">
@@ -77,7 +77,8 @@
 
     <!-- Blockly library -->
     <script type=text/javascript src=blockly_compressed.js></script>
-
+    <script type=text/javascript src=blocks/index.js></script>
+    <script type=text/javascript src=generators/index.js></script>
     <script type=text/javascript src=msg/en.js></script>
     <script type=text/javascript src=js/jquery-2.1.1.min.js></script>
     <script type=text/javascript src=js/bootstrap.min.js></script>
@@ -86,5 +87,16 @@
     <script type=text/javascript src=js/prettify.js></script>
     <script type=text/javascript src=js/jquery.mousewheel.min.js></script>
     <script type="text/javascript" src="js/jquery.terminal-0.8.8.min.js"></script>
+
+    <!-- Setup toolbox -->
+    <script type=text/javascript src="toolbox/index.js"></script>
+    <script>
+        // Inject toolbox
+        function addToolBox() {
+            document.getElementById("addToolBox")
+                .innerHTML += toolBox;
+        }
+        addToolBox()
+    </script>
 </body>
 </html>
