@@ -44,20 +44,8 @@
             </div>
 
             <!-- Toolbox -->
-            <xml id="toolbox">
-                <category name="Variables">
-                    <block type="variables_declare">
-                        <value name="VALUE">
-                        </value>
-                    </block>
-                    <block type="variables_get"></block>
-                    <block type="variables_set">
-                        <value name="VALUE">
-                        </value>
-                    </block>
-                    <block type="library_stdio_text_char"></block>
-                </category>
-            </xml>
+            <!-- Toolbox -->
+            <div id="addToolBox"></div>
 
             <!-- Code C (generate) -->
             <div class="col-xs-4">
@@ -99,5 +87,16 @@
     <script type=text/javascript src=js/prettify.js></script>
     <script type=text/javascript src=js/jquery.mousewheel.min.js></script>
     <script type="text/javascript" src="js/jquery.terminal-0.8.8.min.js"></script>
+
+    <!-- Setup toolbox -->
+    <script type=text/javascript src="toolbox/index.js"></script>
+    <script>
+        // Inject toolbox
+        function addToolBox() {
+            document.getElementById("addToolBox")
+                .innerHTML += toolBox;
+        }
+        addToolBox()
+    </script>
 </body>
 </html>
