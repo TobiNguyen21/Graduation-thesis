@@ -89,47 +89,51 @@ Blockly.Blocks.define_declare = {
 };
 
 /**
- * Variables - Select block
+ * [Toolbox][Variables] - Select block
  */
 Blockly.Blocks.variables_get = {
     init: function () {
         if (LOG_NAME_BLOCK) console.log(`${rootVariables} variables_get`);
         this.setColour(250);
-        this.appendDummyInput().appendField(Blockly.Msg.VARIABLES_GET_TITLE).appendField(new Blockly.FieldVariable(Blockly.Msg.SELECT_MENU, null, this), "VAR")
+        this.appendDummyInput()
+            .appendField(Blockly.Msg.VARIABLES_GET_TITLE)
+            .appendField(new Blockly.FieldVariable(Blockly.Msg.SELECT_MENU, null, this), "VAR")
             .appendField(Blockly.Msg.VARIABLES_GET_TAIL);
-        this.setOutput(!0, "Variable");
+        this.setOutput(true, "Variable");
         this.setTooltip(Blockly.Msg.VARIABLES_GET_TOOLTIP);
         this.contextMenuMsg_ = Blockly.Msg.VARIABLES_GET_CREATE_SET;
         this.contextMenuType_ = "variables_set";
-        this.tag = Blockly.Msg.TAG_VARIABLE_GET
+        this.tag = Blockly.Msg.TAG_VARIABLE_GET;
     },
     getVars: function () {
-        return [this.getFieldValue("VAR")]
+        return [this.getFieldValue("VAR")];
     },
     getPos: function () {
-        return this.getRelativeToSurfaceXY().y
+        return this.getRelativeToSurfaceXY().y;
     },
     renameVar: function (a, b) {
-        Blockly.Names.equals(a, this.getFieldValue("VAR")) && this.setFieldValue(b, "VAR")
+        if (Blockly.Names.equals(a, this.getFieldValue("VAR"))) {
+            this.setFieldValue(b, "VAR");
+        }
     },
     customContextMenu: function (a) {
         var b = {
-            enabled: !0
-        },
-            c = this.getFieldValue("VAR");
+            enabled: true,
+        };
+        var c = this.getFieldValue("VAR");
         b.text = this.contextMenuMsg_.replace("%1", c);
         c = goog.dom.createDom("field", null, c);
         c.setAttribute("name", "VAR");
         c = goog.dom.createDom("block", null, c);
         c.setAttribute("type", this.contextMenuType_);
         b.callback = Blockly.ContextMenu.callbackFactory(this, c);
-        a.push(b)
+        a.push(b);
     },
     onchange: function () {
         Blockly.Blocks.requireInFunction(this);
         var a = this.getFieldValue("VAR");
         a = Blockly.FieldDropdown.prototype.getTypefromVars(a, 0);
-        this.setOutputType("VAR", a)
+        this.setOutputType("VAR", a);
     },
     setOutputType: function (a, b) {
         switch (b) {
@@ -146,47 +150,56 @@ Blockly.Blocks.variables_get = {
                 this.changeOutput(a + "_DOUBLE");
                 break;
             case "char":
-                this.changeOutput(a + "_CHAR")
+                this.changeOutput(a + "_CHAR");
         }
-    }
+    },
 };
 
 /**
- * Variables - Set Select to block
+ * [Toolbox][Variables] - Set Select to block
  */
 Blockly.Blocks.variables_set = {
     init: function () {
         if (LOG_NAME_BLOCK) console.log(`${rootVariables} variables_set`);
         this.setColour(250);
-        this.interpolateMsg(Blockly.Msg.VARIABLES_SET_TITLE + " %1 " + Blockly.Msg.VARIABLES_SET_TAIL + " %2", ["VAR", new Blockly.FieldVariable(Blockly.Msg.SELECT_MENU, null, this)], ["VALUE", null, Blockly.ALIGN_RIGHT], Blockly.ALIGN_RIGHT);
-        this.setPreviousStatement(!0);
-        this.setNextStatement(!0);
+        this.interpolateMsg(
+            Blockly.Msg.VARIABLES_SET_TITLE + " %1 " + Blockly.Msg.VARIABLES_SET_TAIL + " %2",
+            ["VAR", new Blockly.FieldVariable(Blockly.Msg.SELECT_MENU, null, this)],
+            ["VALUE", null, Blockly.ALIGN_RIGHT],
+            Blockly.ALIGN_RIGHT
+        );
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
         this.setTooltip(Blockly.Msg.VARIABLES_SET_TOOLTIP);
         this.contextMenuMsg_ = Blockly.Msg.VARIABLES_SET_CREATE_GET;
         this.contextMenuType_ = "variables_get";
-        this.tag = Blockly.Msg.TAG_VARIABLE_SET
+        this.tag = Blockly.Msg.TAG_VARIABLE_SET;
     },
     getVars: function () {
-        return [this.getFieldValue("VAR")]
+        return [this.getFieldValue("VAR")];
     },
     getPos: function () {
-        return this.getRelativeToSurfaceXY().y
+        return this.getRelativeToSurfaceXY().y;
     },
     renameVar: function (a, b) {
-        Blockly.Names.equals(a, this.getFieldValue("VAR")) && this.setFieldValue(b, "VAR")
+        if (Blockly.Names.equals(a, this.getFieldValue("VAR"))) {
+            this.setFieldValue(b, "VAR");
+        }
     },
     customContextMenu: Blockly.Blocks.variables_get.customContextMenu,
     onchange: function () {
         Blockly.Blocks.requireInFunction(this);
         var a = this.getFieldValue("VAR");
         a = Blockly.FieldDropdown.prototype.getTypefromVars(a, 0);
-        0 == a && (a = "int");
-        Blockly.Blocks.setCheckVariable(this, a, "VALUE")
-    }
+        if (a === 0) {
+            a = "int";
+        }
+        Blockly.Blocks.setCheckVariable(this, a, "VALUE");
+    },
 };
 
 /**
- * Variables - Init value block
+ * [Toolbox][Variables] - Init value block
  */
 Blockly.Blocks.variables_declare = {
     init: function () {
@@ -200,53 +213,65 @@ Blockly.Blocks.variables_declare = {
         ];
         this.setColour(250);
         var b = Blockly.Procedures.findLegalName(Blockly.Msg.VARIABLES_DECLARE_DEFAULT_NAME, this);
-        this.interpolateMsg("%1 " + Blockly.Msg.VARIABLES_DECLARE_TITLE + Blockly.Msg.VARIABLES_DECLARE_NAME +
-            " %2 " + Blockly.Msg.VARIABLES_DECLARE_INIT + " %3 ", ["TYPES", new Blockly.FieldDropdown(a, null, this)], ["VAR", new Blockly.FieldTextInput(b, Blockly.Procedures.rename)], ["VALUE", null, Blockly.ALIGN_RIGHT], Blockly.ALIGN_RIGHT);
-        this.setPreviousStatement(!0);
-        this.setNextStatement(!0);
+        this.interpolateMsg(
+            "%1 " + Blockly.Msg.VARIABLES_DECLARE_TITLE + Blockly.Msg.VARIABLES_DECLARE_NAME + " %2 " + Blockly.Msg.VARIABLES_DECLARE_INIT + " %3 ",
+            ["TYPES", new Blockly.FieldDropdown(a, null, this)],
+            ["VAR", new Blockly.FieldTextInput(b, Blockly.Procedures.rename)],
+            ["VALUE", null, Blockly.ALIGN_RIGHT],
+            Blockly.ALIGN_RIGHT
+        );
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
         this.setTooltip(Blockly.Msg.VARIABLES_DECLARE_TOOLTIP);
         this.contextMenuMsg_ = Blockly.Msg.VARIABLES_SET_CREATE_GET;
         this.contextMenuType_ = "variables_get";
         this.tag = Blockly.Msg.TAG_VARIABLE_DECLARE;
-        this.oldName = b
+        this.oldName = b;
     },
     initVar: Blockly.Blocks.define_declare.initVar,
     getDist: function () {
-        return "v"
+        return "v";
     },
     getScope: function () {
-        if (this.getSurroundParent()) return this.getSurroundParent().getName()
+        if (this.getSurroundParent()) {
+            return this.getSurroundParent().getName();
+        }
     },
     getSpec: function () {
-        return null
+        return null;
     },
     getPos: function () {
-        return this.getRelativeToSurfaceXY().y
+        return this.getRelativeToSurfaceXY().y;
     },
     getTypes: function () {
-        return [this.getFieldValue("TYPES")]
+        return [this.getFieldValue("TYPES")];
     },
     getVars: function () {
-        return [this.getFieldValue("VAR")]
+        return [this.getFieldValue("VAR")];
     },
     getDeclare: function () {
-        return [this.getFieldValue("VAR")]
+        return [this.getFieldValue("VAR")];
     },
     renameVar: function (a, b) {
-        Blockly.Names.equals(a, this.getFieldValue("VAR")) && this.setFieldValue(b, "VAR")
+        if (Blockly.Names.equals(a, this.getFieldValue("VAR"))) {
+            this.setFieldValue(b, "VAR");
+        }
     },
     customContextMenu: Blockly.Blocks.variables_get.customContextMenu,
     onchange: function () {
         Blockly.Blocks.variablePlaceCheck(this);
         var a = this.getFieldValue("TYPES");
-        0 == a && (a = "int");
+        if (a === 0) {
+            a = "int";
+        }
         Blockly.Blocks.setCheckVariable(this, a, "VALUE");
         a = this.getFieldValue("VAR");
-        if (this.oldName != a) {
+        if (this.oldName !== a) {
             var b = this.getScope();
-            b && Blockly.Variables.renameVariablebyScope(this.oldName, a, b[0]);
-            this.oldName = a
+            if (b) {
+                Blockly.Variables.renameVariablebyScope(this.oldName, a, b[0]);
+            }
+            this.oldName = a;
         }
-    }
+    },
 };
-
