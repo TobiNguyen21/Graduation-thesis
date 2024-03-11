@@ -360,8 +360,10 @@ Blockly.cake.varTypeCheckInPrintScan = function (variableName) {
                     formatSpecifier = "%u";
                     break;
                 case "float":
-                case "double":
                     formatSpecifier = "%f";
+                    break;
+                case "double":
+                    formatSpecifier = "%lf";
                     break;
                 case "char":
                     formatSpecifier = "%c";
@@ -376,4 +378,99 @@ Blockly.cake.varTypeCheckInPrintScan = function (variableName) {
         }
     }
     return formatSpecifier;
+};
+
+// Generator for scanf block - Block definition for library_stdio_scanf
+Blockly.cake.library_stdio_scanf = function (block) {
+    let formatSpecifiers = "";
+    let variableDeclarations = "";
+
+    for (let i = 0; i <= block.scanAddCount_; i++) {
+        // Get the code for the input variable
+        let inputVariableCode = Blockly.cake.valueToCode(block, "VAR" + i, Blockly.cake.ORDER_NONE) || "";
+
+        // Get the type of the input variable block
+        let inputBlockConnection = block.inputList[i].connection;
+        let inputBlock = inputBlockConnection.targetBlock();
+        let inputBlockType = inputBlock ? inputBlock.type : "";
+
+        // Handle different cases based on the type of input block
+        if (inputBlockType === "variables_array_get") {
+            let variableParts = inputVariableCode.split("[");
+            let variableType = Blockly.cake.varTypeCheckInPrintScan(variableParts[0]);
+
+            if (variableType === "%c") {
+                // Special case for characters, handle as string
+                formatSpecifiers += ",%s";
+                variableDeclarations += `, ${variableParts[0]}`;
+            } else {
+                formatSpecifiers += `,${variableType}`;
+                variableDeclarations += `, &${inputVariableCode}`;
+            }
+        } else if (inputBlockType === "variables_pointer_get") {
+            let variableType = Blockly.cake.varTypeCheckInPrintScan(inputVariableCode);
+            if (variableType === "%c") {
+                // Special case for characters, handle as string
+                formatSpecifiers += `,${variableType}`;
+                variableDeclarations += `, ${inputVariableCode}`;
+            } else {
+                formatSpecifiers += `,${variableType}`;
+                variableDeclarations += `, &${inputVariableCode}`;
+            }
+        } else if (inputBlockType === "variables_pointer_&") {
+            // Ignore variables_pointer_& blocks
+            inputBlockConnection.isSuperior() ? inputBlockConnection.targetBlock().setParent(null) : inputBlockConnection.sourceBlock_.setParent(null);
+            inputBlockConnection.sourceBlock_.bumpNeighbours_();
+        } else if (inputBlockType === "variables_pointer_*") {
+            let valueBlock = inputBlock.inputList[0].connection.targetBlock();
+            if (valueBlock) {
+                let valueVariableCode = Blockly.cake.valueToCode(valueBlock, "VALUE", Blockly.cake.ORDER_NONE) || "";
+                let variableType = Blockly.cake.varTypeCheckInPrintScan(valueVariableCode);
+
+                if (variableType === "") {
+                    // No specific type found, treat as is
+                    formatSpecifiers += valueVariableCode;
+                } else {
+                    formatSpecifiers += `,${variableType}`;
+                    variableDeclarations += `, &*${valueVariableCode}`;
+                }
+            }
+        } else {
+            // Default case for regular variables
+            let variableType = Blockly.cake.varTypeCheckInPrintScan(inputVariableCode);
+            formatSpecifiers += `,${variableType}`;
+            variableDeclarations += `, &${inputVariableCode}`;
+        }
+    }
+
+    // Construct the final scanf code
+    let scanfCode = (variableDeclarations === "") ? `scanf("${formatSpecifiers.substring(1)}");` : `scanf("${formatSpecifiers.substring(1)}"${variableDeclarations});`;
+
+    // Include the required header in the definitions
+    Blockly.cake.definitions_.include_cake_stdio = "#include <stdio.h>";
+
+    // Return the generated scanf code
+    return `${scanfCode}\n`;
+};
+
+// Generator for tab block
+Blockly.cake.library_stdio_tab = function (block) {
+    // Check if the block is not inside specific parent types
+    if (!block.getParent() || block.getParent().type !== "library_stdio_printf" && block.getParent().type !== "define_declare" && block.getParent().type !== "comment") {
+        return ["'\\t'", Blockly.cake.ORDER_ATOMIC];
+    } else {
+        // Block is inside specific parent types
+        return ["\\t", Blockly.cake.ORDER_NONE];
+    }
+};
+
+// Generator for newLine block
+Blockly.cake.library_stdio_newLine = function (block) {
+    // Check if the block is not inside specific parent types
+    if (!block.getParent() || block.getParent().type !== "library_stdio_printf" && block.getParent().type !== "define_declare" && block.getParent().type !== "comment") {
+        return ["'\\n'", Blockly.cake.ORDER_ATOMIC];
+    } else {
+        // Block is inside specific parent types
+        return ["\\n", Blockly.cake.ORDER_NONE];
+    }
 };
