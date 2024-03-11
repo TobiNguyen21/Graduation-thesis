@@ -206,7 +206,7 @@ Blockly.Blocks.variables_declare = {
         if (LOG_NAME_BLOCK) console.log(`${rootVariables} variables_declare`);
         var a = [
             [Blockly.Msg.VARIABLES_SET_TYPE_INT, "int"],
-            [Blockly.Msg.VARIABLES_SET_TYPE_UNSIGNED_INT, "unsigned int"],
+            // [Blockly.Msg.VARIABLES_SET_TYPE_UNSIGNED_INT, "unsigned int"],
             [Blockly.Msg.VARIABLES_SET_TYPE_FLOAT, "float"],
             [Blockly.Msg.VARIABLES_SET_TYPE_DOUBLE, "double"],
             [Blockly.Msg.VARIABLES_SET_TYPE_CHAR, "char"]
