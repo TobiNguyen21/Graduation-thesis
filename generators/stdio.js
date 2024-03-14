@@ -382,4 +382,15 @@ Blockly.cake.varTypeCheckInPrintScan = function (variableName) {
     }
     return formatSpecifier;
 };
+<<<<<<< HEAD
 >>>>>>> 3966067 ([GTH-3] fix printf with variable)
+=======
+
+Blockly.cake.library_stdio_text = function (block) {
+    let textValue = Blockly.cake.quote_(block.getFieldValue("TEXT"));
+    if (!block.getParent() || block.getParent().type !== "library_stdio_printf" && block.getParent().type !== "define_declare" && block.getParent().type !== "comment") {
+        textValue = textValue.length === 1 ? "'" + textValue + "'" : '"' + textValue + '"';
+    }
+    return [textValue, Blockly.cake.ORDER_ATOMIC];
+};
+>>>>>>> 3cb5f91 ([GTH-03] add stdio_text generator)
