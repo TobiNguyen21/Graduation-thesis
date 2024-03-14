@@ -328,41 +328,6 @@ Blockly.cake.varTypeCheckInPrintScan = function (variableName) {
     }
     return formatSpecifier;
 };
-// Function to check variable type and return corresponding format specifier for printf/scanf
-Blockly.cake.varTypeCheckInPrintScan = function (variableName) {
-  let formatSpecifier = "";
-
-  // Get all variables in the workspace
-  const allVariables = Blockly.Variables.allVariables();
-
-  for (const variableInfo of allVariables) {
-    if (variableName === variableInfo[2]) {
-      const variableType = variableInfo[0];
-      switch (variableType) {
-        case "int":
-          formatSpecifier = "%d";
-          break;
-        case "unsigned int":
-          formatSpecifier = "%u";
-          break;
-        case "float":
-        case "double":
-          formatSpecifier = "%f";
-          break;
-        case "char":
-          formatSpecifier = "%c";
-          break;
-        case "dbchar":
-          formatSpecifier = "%s";
-          break;
-        default:
-          break;
-      }
-      break;
-    }
-  }
-  return formatSpecifier;
-};
 
 Blockly.cake.library_stdio_text = function (block) {
   let textValue = Blockly.cake.quote_(block.getFieldValue("TEXT"));
