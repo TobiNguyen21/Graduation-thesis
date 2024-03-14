@@ -292,9 +292,6 @@ Blockly.cake.library_stdio_printf = function (p) {
 
   return code;
 };
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
 
 // Function to check variable type and return corresponding format specifier for printf/scanf
 Blockly.cake.varTypeCheckInPrintScan = function (variableName) {
@@ -344,53 +341,3 @@ Blockly.cake.library_stdio_text = function (block) {
   }
   return [textValue, Blockly.cake.ORDER_ATOMIC];
 };
->>>>>>> Stashed changes
-=======
-
-// Function to check variable type and return corresponding format specifier for printf/scanf
-Blockly.cake.varTypeCheckInPrintScan = function (variableName) {
-    let formatSpecifier = "";
-
-    // Get all variables in the workspace
-    const allVariables = Blockly.Variables.allVariables();
-
-    for (const variableInfo of allVariables) {
-        if (variableName === variableInfo[2]) {
-            const variableType = variableInfo[0];
-            switch (variableType) {
-                case "int":
-                    formatSpecifier = "%d";
-                    break;
-                case "unsigned int":
-                    formatSpecifier = "%u";
-                    break;
-                case "float":
-                case "double":
-                    formatSpecifier = "%f";
-                    break;
-                case "char":
-                    formatSpecifier = "%c";
-                    break;
-                case "dbchar":
-                    formatSpecifier = "%s";
-                    break;
-                default:
-                    break;
-            }
-            break;
-        }
-    }
-    return formatSpecifier;
-};
-<<<<<<< HEAD
->>>>>>> 3966067 ([GTH-3] fix printf with variable)
-=======
-
-Blockly.cake.library_stdio_text = function (block) {
-    let textValue = Blockly.cake.quote_(block.getFieldValue("TEXT"));
-    if (!block.getParent() || block.getParent().type !== "library_stdio_printf" && block.getParent().type !== "define_declare" && block.getParent().type !== "comment") {
-        textValue = textValue.length === 1 ? "'" + textValue + "'" : '"' + textValue + '"';
-    }
-    return [textValue, Blockly.cake.ORDER_ATOMIC];
-};
->>>>>>> 3cb5f91 ([GTH-03] add stdio_text generator)
