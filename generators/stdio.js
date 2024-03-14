@@ -292,8 +292,6 @@ Blockly.cake.library_stdio_printf = function (p) {
 
   return code;
 };
-<<<<<<< Updated upstream
-=======
 
 // Function to check variable type and return corresponding format specifier for printf/scanf
 Blockly.cake.varTypeCheckInPrintScan = function (variableName) {
@@ -343,4 +341,3 @@ Blockly.cake.library_stdio_text = function (block) {
   }
   return [textValue, Blockly.cake.ORDER_ATOMIC];
 };
->>>>>>> Stashed changes
