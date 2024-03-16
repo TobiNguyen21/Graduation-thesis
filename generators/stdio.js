@@ -341,3 +341,125 @@ Blockly.cake.library_stdio_text = function (block) {
   }
   return [textValue, Blockly.cake.ORDER_ATOMIC];
 };
+
+/**
+ * tab_generator
+ * @param {*} block 
+ * @returns code C
+ */
+Blockly.cake.library_stdio_tab = function (block) {
+  if (
+    !block.getParent() ||
+    (block.getParent().type !== "library_stdio_printf" &&
+      block.getParent().type !== "define_declare" &&
+      block.getParent().type !== "comment")
+  ) {
+    return ["'\\t'", Blockly.cake.ORDER_ATOMIC];
+  } else {
+    return ["\\t", Blockly.cake.ORDER_NONE];
+  }
+};
+
+/**
+ * newLine_generator
+ * @param {*} block 
+ * @returns code C
+ */
+Blockly.cake.library_stdio_newLine = function (block) {
+  if (!block.getParent() || 
+      (block.getParent().type !== "library_stdio_printf" && 
+       block.getParent().type !== "define_declare" && 
+       block.getParent().type !== "comment")) {
+      return ["'\\n'", Blockly.cake.ORDER_ATOMIC];
+  } else {
+      return ["\\n", Blockly.cake.ORDER_NONE];
+  }
+};
+
+/**
+ * scanf_generator
+ * @param {*} block 
+ * @returns code C
+ */
+Blockly.cake.library_stdio_scanf = function (block) {
+  let formatSpecifier = "", argumentsList = "";
+  for (let i = 0; i <= block.scanAddCount_; i++) {
+      let value = Blockly.cake.valueToCode(block, "VAR" + i, Blockly.cake.ORDER_NONE) || "";
+      let connection = block.inputList[i].connection;
+      let targetBlock = connection.targetBlock();
+      if (targetBlock) {
+          let type = targetBlock.type;
+          if (type === "variables_array_get") {
+              let variableName = value.split("[")[0];
+              let typeSpecifier = Blockly.cake.arrTypeCheckInScan(variableName, connection);
+              "%c" === typeSpecifier ? (targetBlock = connection.targetBlock(), 
+                  targetBlock.getInputIdxLength() === 0 ? (formatSpecifier += ",%s", argumentsList += ", " + variableName) : 
+                  (formatSpecifier += "," + typeSpecifier, argumentsList += ", &" + value)) : 
+                  (formatSpecifier += "," + typeSpecifier, argumentsList += ", &" + value);
+          } else if (type === "variables_pointer_get") {
+              let typeSpecifier = Blockly.cake.varTypeCheckInPrintScan(value);
+              "%c" === typeSpecifier && (typeSpecifier = "%s");
+              formatSpecifier += "," + typeSpecifier;
+              argumentsList += ", " + value;
+          } else if (type === "variables_pointer_&") {
+              connection.isSuperior() ? connection.targetBlock().setParent(null) : connection.sourceBlock_.setParent(null);
+              connection.sourceBlock_.bumpNeighbours_();
+          } else if (type === "variables_pointer_*") {
+              let pointerValue = targetBlock.inputList[0].connection.targetBlock();
+              if (pointerValue) {
+                  let pointerCode = Blockly.cake.valueToCode(pointerValue, "VALUE", Blockly.cake.ORDER_NONE) || "";
+                  let typeSpecifier = Blockly.cake.varTypeCheckInPrintScan(pointerCode);
+                  formatSpecifier += "" === typeSpecifier ? pointerCode : "," + typeSpecifier;
+                  argumentsList += ", &*" + pointerCode;
+              }
+          } else {
+              let typeSpecifier = Blockly.cake.varTypeCheckInPrintScan(value);
+              formatSpecifier += "," + typeSpecifier;
+              argumentsList += ", &" + value;
+          }
+      }
+  }
+  let scanfFormat = "" === argumentsList ? 'scanf("' + formatSpecifier.substring(1) + '");' : 'scanf("' + formatSpecifier.substring(1) + '"' + argumentsList + ");";
+  Blockly.cake.definitions_.include_cake_stdio = "#include <stdio.h>";
+  return scanfFormat + "\n";
+};
+
+/**
+ * function support to scanf
+ * @param {*} variableName 
+ * @param {*} connection
+ * @returns code C
+ */
+Blockly.cake.arrTypeCheckInScan = function (variableName, connection) {
+  let targetBlock = connection.targetBlock();
+  let wantedBlocks = Blockly.Blocks.getWantedBlockArray("a");
+  for (let i = 0; i < wantedBlocks.length; i++) {
+      let type = Blockly.FieldDropdown.prototype.getTypefromVars(wantedBlocks[i][2], 0);
+      let expectedLength = wantedBlocks[i][5][0];
+      let inputLength = targetBlock.getInputIdxLength();
+      if (expectedLength === inputLength) {
+          switch (type) {
+              case "int":
+                  return "%d";
+              case "unsigned int":
+                  return "%u";
+              case "float":
+                  return "%f";
+              case "double":
+                  return "%lf";
+              case "char":
+                  return "%c";
+              case "dbchar":
+                  return "%s";
+              default:
+                  break;
+          }
+      } else if (expectedLength > inputLength && type === "char") {
+          return "%s";
+      } else {
+          connection.isSuperior() ? targetBlock.setParent(null) : connection.sourceBlock_.setParent(null);
+          connection.sourceBlock_.bumpNeighbours_();
+      }
+  }
+  return "";
+};
