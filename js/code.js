@@ -16,7 +16,7 @@ function start() {
 
 function renderContent() {
   var content = document.getElementById('code');
-  var code = Blockly.cake.workspaceToCode();
+  var code = Blockly.c_language.workspaceToCode();
   content.textContent = code;
   if (typeof prettyPrintOne == 'function') {
     code = content.innerHTML;
@@ -49,11 +49,11 @@ jQuery(function ($, undefined) {
       }
     }
   }, {
-    greetings: 'Cake Console Terminal',
+    greetings: 'C_language Console Terminal',
     name: 'js_demo',
     height: 0,
     width: 0,
-    prompt: 'cake> '
+    prompt: 'C_language> '
   });
 });
 
@@ -62,7 +62,7 @@ jQuery(function ($, undefined) {
  * https://github.com/eligrey/FileSaver.js
  */
 function downloadCode() {
-  var code = Blockly.cake.workspaceToCode();
+  var code = Blockly.c_language.workspaceToCode();
   var codeArray = [];
   codeArray.push(code);
   console.log(code);

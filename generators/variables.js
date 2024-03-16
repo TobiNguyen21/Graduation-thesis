@@ -1,38 +1,38 @@
-Blockly.cake.variables = {};
+Blockly.c_language.variables = {};
 
-Blockly.cake.define_get = function (block) {
-  const varName = Blockly.cake.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
+Blockly.c_language.define_get = function (block) {
+  const varName = Blockly.c_language.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
   const sanitizedVarName = Blockly.Blocks.checkUnselect(varName);
-  return [sanitizedVarName, Blockly.cake.ORDER_ATOMIC];
+  return [sanitizedVarName, Blockly.c_language.ORDER_ATOMIC];
 };
 
-Blockly.cake.define_declare = function (block) {
-  const valueCode = Blockly.cake.valueToCode(block, "VALUE", Blockly.cake.ORDER_ASSIGNMENT) || "0";
-  const varName = Blockly.cake.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
+Blockly.c_language.define_declare = function (block) {
+  const valueCode = Blockly.c_language.valueToCode(block, "VALUE", Blockly.c_language.ORDER_ASSIGNMENT) || "0";
+  const varName = Blockly.c_language.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
   if (Blockly.Blocks.checkLegalName(Blockly.Msg.VARIABLES_ILLEGALNAME, varName) === -1) {
     this.initVar();
   }
-  const defineCode = Blockly.cake.scrub_(block, "#define " + varName + " " + valueCode);
-  Blockly.cake.definitions_["define_" + varName] = defineCode;
+  const defineCode = Blockly.c_language.scrub_(block, "#define " + varName + " " + valueCode);
+  Blockly.c_language.definitions_["define_" + varName] = defineCode;
   return null;
 };
 
-Blockly.cake.variables_get = function (block) {
-  const varName = Blockly.cake.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
+Blockly.c_language.variables_get = function (block) {
+  const varName = Blockly.c_language.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
   const sanitizedVarName = Blockly.Blocks.checkUnselect(varName);
-  return [sanitizedVarName, Blockly.cake.ORDER_ATOMIC];
+  return [sanitizedVarName, Blockly.c_language.ORDER_ATOMIC];
 };
 
-Blockly.cake.variables_set = function (block) {
-  const valueCode = Blockly.cake.valueToCode(block, "VALUE", Blockly.cake.ORDER_ASSIGNMENT) || "0";
-  const varName = Blockly.cake.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
+Blockly.c_language.variables_set = function (block) {
+  const valueCode = Blockly.c_language.valueToCode(block, "VALUE", Blockly.c_language.ORDER_ASSIGNMENT) || "0";
+  const varName = Blockly.c_language.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
   const sanitizedVarName = Blockly.Blocks.checkUnselect(varName);
   return sanitizedVarName + " = " + valueCode + ";\n";
 };
 
-Blockly.cake.variables_declare = function (block) {
-  const valueCode = Blockly.cake.valueToCode(block, "VALUE", Blockly.cake.ORDER_ASSIGNMENT) || "0";
-  const varName = Blockly.cake.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
+Blockly.c_language.variables_declare = function (block) {
+  const valueCode = Blockly.c_language.valueToCode(block, "VALUE", Blockly.c_language.ORDER_ASSIGNMENT) || "0";
+  const varName = Blockly.c_language.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
   const varType = block.getFieldValue("TYPES");
   if (Blockly.Blocks.checkLegalName(Blockly.Msg.VARIABLES_ILLEGALNAME, varName) === -1) {
     this.initVar();
