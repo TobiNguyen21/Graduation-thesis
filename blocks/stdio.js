@@ -29,99 +29,6 @@ Blockly.Blocks.library_stdio_text_char = {
  * [Toolbox][Output] - Print block 
  */
 Blockly.Blocks.library_stdio_printf = {
-<<<<<<< Updated upstream
-    init: function () {
-        if (LOG_NAME_BLOCK) console.log(`${rootStdio} library_stdio_printf`);
-
-        // Set block color and properties
-        this.setColour(280);
-        this.appendValueInput("VAR0").setCheck(null).appendField(Blockly.Msg.STDIO_PRINTF_TITLE);
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
-        this.setMutator(new Blockly.Mutator(["library_stdio_printf_add"]));
-        this.setTooltip(Blockly.Msg.TEXT_PRINT_TOOLTIP);
-        this.tag = Blockly.Msg.TAG_STDIO_PRINTF;
-        this.printAddCount_ = 0;
-    },
-    mutationToDom: function () {
-        // Save mutation data for serialization
-        if (!this.printAddCount_) return null;
-
-        var mutationElement = document.createElement("mutation");
-        mutationElement.setAttribute("printadd", this.printAddCount_);
-        return mutationElement;
-    },
-    domToMutation: function (mutationElement) {
-        // Restore mutation data during deserialization
-        this.printAddCount_ = parseInt(mutationElement.getAttribute("printadd"), 10);
-
-        // Append value inputs based on the saved count
-        for (var i = 1; i <= this.printAddCount_; i++) {
-            this.appendValueInput("VAR" + i).setCheck(null).appendField("");
-        }
-    },
-    decompose: function (workspace) {
-        // Decompose the block into sub-blocks for mutator
-        var containerBlock = Blockly.Block.obtain(workspace, "library_stdio_printf_printf");
-        containerBlock.initSvg();
-
-        // Connect sub-blocks in a chain
-        for (var i = 1; i <= this.printAddCount_; i++) {
-            var addBlock = Blockly.Block.obtain(workspace, "library_stdio_printf_add");
-            addBlock.initSvg();
-            containerBlock.getInput("STACK").connection.connect(addBlock.previousConnection);
-            containerBlock.getInput("STACK").connection = addBlock.nextConnection;
-        }
-
-        return containerBlock;
-    },
-    compose: function (containerBlock) {
-        // Compose the block from sub-blocks in the mutator
-        for (var i = this.printAddCount_; i > 0; i--) {
-            this.removeInput("VAR" + i);
-        }
-
-        this.printAddCount_ = 0;
-        var inputBlock = containerBlock.getInputTargetBlock("STACK");
-
-        // Iterate through sub-blocks and append value inputs
-        while (inputBlock) {
-            switch (inputBlock.type) {
-                case "library_stdio_printf_add":
-                    this.printAddCount_++;
-                    var valueInput = this.appendValueInput("VAR" + this.printAddCount_).setCheck(null).appendField("");
-                    if (inputBlock.valueConnection_) {
-                        valueInput.connection.connect(inputBlock.valueConnection_);
-                    }
-                    break;
-                default:
-                    throw "Unknown block type.";
-            }
-
-            inputBlock = inputBlock.nextConnection && inputBlock.nextConnection.targetBlock();
-        }
-    },
-    saveConnections: function (containerBlock) {
-        // Save connections of sub-blocks during mutator changes
-        var inputBlock = containerBlock.getInputTargetBlock("STACK");
-        var index = 1;
-
-        while (inputBlock) {
-            switch (inputBlock.type) {
-                case "library_stdio_printf_add":
-                    var valueInput = this.getInput("VAR" + index);
-                    inputBlock.valueConnection_ = valueInput && valueInput.connection.targetConnection;
-                    inputBlock.statementConnection_ = index++;
-                    break;
-                default:
-                    throw "Unknown block type.";
-            }
-
-            inputBlock = inputBlock.nextConnection && inputBlock.nextConnection.targetBlock();
-        }
-    },
-    onchange: Blockly.Blocks.requireInFunction,
-=======
   init: function () {
     if (LOG_NAME_BLOCK) console.log(`${rootStdio} library_stdio_printf`);
     this.setColour(280);
@@ -201,7 +108,6 @@ Blockly.Blocks.library_stdio_printf = {
     }
   },
   onchange: Blockly.Blocks.requireInFunction,
->>>>>>> Stashed changes
 };
 
 /**
