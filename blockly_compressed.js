@@ -14274,7 +14274,7 @@ Blockly.Block.prototype.render = function() {
     Blockly.Realtime.blockChanged(this)
 };
 Blockly.Blocks.CNameValidator = function(a) {
-    return !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(a) || /^index[0-9]+$/.test(a) || -1 !== Blockly.cake.RESERVED_WORDS_.indexOf("," + a + ",") ? null : a
+    return !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(a) || /^index[0-9]+$/.test(a) || -1 !== Blockly.c_language.RESERVED_WORDS_.indexOf("," + a + ",") ? null : a
 };
 Blockly.Blocks.CreateMainBlock = function() {
     var a = this;
@@ -15725,7 +15725,7 @@ Blockly.Procedures.getDefinition = function(a, b) {
 Blockly.Procedures.typeCheck = function() {};
 Blockly.Procedures.returnTypeCheck = function(a, b) {};
 Blockly.Procedures.getTypePlusArgs = function(f) {
-    for (var c = [], d = [], g = [], b = [], e = [], a = 0; a < f.arguments_.length; a++) c[a] = Blockly.cake.variableDB_.getName(f.arguments_[a], Blockly.Variables.NAME_TYPE), d[a] = f.types_[a], g[a] = f.dist_[a], b[a] = f.spec_[a], "v" == g[a] ? e[a] = d[a] + " " + c[a] : "a" == g[a] ? 1 == b[a][0] ? e[a] = d[a] + " " + c[a] + "[]" : 2 == b[a][0] ? e[a] = d[a] + " " + c[a] + "[][" + b[a][2] + "]" : 3 == b[a][0] && (e[a] = d[a] + " " + c[a] + "[][" + b[a][2] + "][" + b[a][2] + "]") : "p" == g[a] && (e[a] = d[a] + " " + b[a] + c[a]);
+    for (var c = [], d = [], g = [], b = [], e = [], a = 0; a < f.arguments_.length; a++) c[a] = Blockly.c_language.variableDB_.getName(f.arguments_[a], Blockly.Variables.NAME_TYPE), d[a] = f.types_[a], g[a] = f.dist_[a], b[a] = f.spec_[a], "v" == g[a] ? e[a] = d[a] + " " + c[a] : "a" == g[a] ? 1 == b[a][0] ? e[a] = d[a] + " " + c[a] + "[]" : 2 == b[a][0] ? e[a] = d[a] + " " + c[a] + "[][" + b[a][2] + "]" : 3 == b[a][0] && (e[a] = d[a] + " " + c[a] + "[][" + b[a][2] + "][" + b[a][2] + "]") : "p" == g[a] && (e[a] = d[a] + " " + b[a] + c[a]);
     return e
 };
 

@@ -1,29 +1,29 @@
-Blockly.cake.procedures = {};
+Blockly.c_language.procedures = {};
 
 /**
  * 
  * @param {*} block 
  * @returns 
  */
-Blockly.cake.main_block = function (block) {
+Blockly.c_language.main_block = function (block) {
   // Generate code for blocks inside the "STACK" input
-  let blockCode = Blockly.cake.statementToCode(block, "STACK");
+  let blockCode = Blockly.c_language.statementToCode(block, "STACK");
 
   // Add statement prefix if defined
-  if (Blockly.cake.STATEMENT_PREFIX) {
-    blockCode = Blockly.cake.prefixLines(
-      Blockly.cake.STATEMENT_PREFIX.replace(/%1/g, "'" + block.id + "'"),
-      Blockly.cake.INDENT
+  if (Blockly.c_language.STATEMENT_PREFIX) {
+    blockCode = Blockly.c_language.prefixLines(
+      Blockly.c_language.STATEMENT_PREFIX.replace(/%1/g, "'" + block.id + "'"),
+      Blockly.c_language.INDENT
     ) + blockCode;
   }
 
   // Add infinite loop trap if defined
-  if (Blockly.cake.INFINITE_LOOP_TRAP) {
-    blockCode = Blockly.cake.INFINITE_LOOP_TRAP.replace(/%1/g, "'" + block.id + "'") + blockCode;
+  if (Blockly.c_language.INFINITE_LOOP_TRAP) {
+    blockCode = Blockly.c_language.INFINITE_LOOP_TRAP.replace(/%1/g, "'" + block.id + "'") + blockCode;
   }
 
   // Generate code for the return value or default to 0 if not specified
-  const returnValue = Blockly.cake.valueToCode(block, "RETURN", Blockly.cake.ORDER_NONE) || "";
+  const returnValue = Blockly.c_language.valueToCode(block, "RETURN", Blockly.c_language.ORDER_NONE) || "";
   const returnStatement = returnValue ? "  return " + returnValue + ";\n" : "  return 0;\n";
 
   // Generate code for function arguments, types, and declarations
@@ -31,7 +31,7 @@ Blockly.cake.main_block = function (block) {
   const typesCode = [];
   const declarationsCode = [];
   for (let i = 0; i < block.arguments_.length; i++) {
-    argumentsCode[i] = Blockly.cake.variableDB_.getName(block.arguments_[i], Blockly.Variables.NAME_TYPE);
+    argumentsCode[i] = Blockly.c_language.variableDB_.getName(block.arguments_[i], Blockly.Variables.NAME_TYPE);
     typesCode[i] = block.types_[i];
     declarationsCode[i] = typesCode[i] + " " + argumentsCode[i];
   }
@@ -39,15 +39,15 @@ Blockly.cake.main_block = function (block) {
   // Generate code for srand and time functions
   const srandCode = [];
   const timeCode = [];
-  for (const functionName in Blockly.cake.times_) {
-    const codeBlock = Blockly.cake.times_[functionName];
+  for (const functionName in Blockly.c_language.times_) {
+    const codeBlock = Blockly.c_language.times_[functionName];
     if (functionName.match("srand")) {
       if (codeBlock[0] === "main_block") {
-        srandCode.push(Blockly.cake.prefixLines(codeBlock[1], Blockly.cake.INDENT));
+        srandCode.push(Blockly.c_language.prefixLines(codeBlock[1], Blockly.c_language.INDENT));
       }
     } else if (functionName.match("time")) {
       if (codeBlock[0] === "main_block") {
-        timeCode.push(Blockly.cake.prefixLines(codeBlock[1], Blockly.cake.INDENT));
+        timeCode.push(Blockly.c_language.prefixLines(codeBlock[1], Blockly.c_language.INDENT));
       }
     }
   }
@@ -63,8 +63,8 @@ Blockly.cake.main_block = function (block) {
     "}";
 
   // Scrub the code and store it in the definitions
-  mainBlockCode = Blockly.cake.scrub_(block, mainBlockCode);
-  Blockly.cake.definitions_.main = mainBlockCode;
+  mainBlockCode = Blockly.c_language.scrub_(block, mainBlockCode);
+  Blockly.c_language.definitions_.main = mainBlockCode;
 
   // Return null as there is no direct output
   return null;
