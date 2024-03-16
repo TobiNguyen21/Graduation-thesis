@@ -16,21 +16,36 @@ Blockly.Blocks.math_number = {
     this.setTooltip(Blockly.Msg.MATH_NUMBER_TOOLTIP);
     this.tag = Blockly.Msg.TAG_MATH_NUMBER;
   },
-
+ 
   onchange: function () {
     Blockly.Blocks.requireInFunction();
-    var numValue = this.getFieldValue("NUM");
 
-    if (numValue === "0") {
-      this.changeOutput("Number");
-    } else if (numValue % 1 === 0) {
-      if (numValue > 0) {
-        this.changeOutput(numValue.endsWith(".0") ? "DOUBLE" : "INT");
-      } else {
-        this.changeOutput(numValue.endsWith(".0") ? "DOUBLE" : "NEGATIVE");
-      }
-    } else {
-      this.changeOutput("DOUBLE");
+    let numValue = this.getFieldValue("NUM");
+
+    if (numValue !== null) {
+        if (typeof numValue === 'string' && numValue !== '') {
+            if (numValue === "0") {
+                this.changeOutput("Number");
+            } else {
+                if (numValue % 1 === 0) {
+                    if (numValue > 0) {
+                        if (numValue.endsWith(".0")) {
+                            this.changeOutput("DOUBLE");
+                        } else {
+                            this.changeOutput("INT");
+                        }
+                    } else {
+                        if (numValue.endsWith(".0")) {
+                            this.changeOutput("DOUBLE");
+                        } else {
+                            this.changeOutput("NEGATIVE");
+                        }
+                    }
+                } else {
+                    this.changeOutput("DOUBLE");
+                }
+            }
+        }
     }
-  }
+}
 };
