@@ -13,7 +13,7 @@ const categories = [
   {
     name: "Pointer",
     blocks: [
-      { type: "variables_pointer_declare", value: '<value name="VALUE"><block type="logic_null"></block></value>' },
+      { type: "variables_pointer_declare", value: '<value name="VALUE"></value>' },
       { type: "variables_pointer_get" },
       {
         type: "variables_pointer_set",
