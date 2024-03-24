@@ -88,7 +88,7 @@ const categories = [
       { type: "controls_if" },
       { type: "controls_switch" },
       { type: "controls_switch_break" },
-      { type: "logic_ternary" }
+      // { type: "logic_ternary" }
     ]
   },
   {
