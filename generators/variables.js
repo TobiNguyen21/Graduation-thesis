@@ -49,3 +49,40 @@ Blockly.c_language.variables_declare = function (block) {
   }
   return declarationCode;
 };
+
+// -------------Pointer----------------
+Blockly.c_language.variables_pointer_get = function (block) {
+  const varName = Blockly.c_language.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
+  return [varName, Blockly.c_language.ORDER_ATOMIC];
+};
+
+Blockly.c_language.variables_pointer_set = function (block) {
+  const value = Blockly.c_language.valueToCode(block, "VALUE", Blockly.c_language.ORDER_ASSIGNMENT) || "NULL";
+  let varName = Blockly.c_language.valueToCode(block, "VAR", Blockly.c_language.ORDER_ASSIGNMENT);
+  varName = Blockly.Blocks.checkUnselect(varName);
+  return varName + " = " + value + ";\n";
+};
+
+Blockly.c_language.variables_pointer_declare = function (block) {
+  const value = Blockly.c_language.valueToCode(block, "VALUE", Blockly.c_language.ORDER_ASSIGNMENT) || "NULL";
+  const varName = Blockly.c_language.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
+  const type = block.getFieldValue("TYPES");
+  const iteration = block.getFieldValue("ITERATION");
+
+  if (iteration === "*" || iteration === "**" || iteration === "***") {
+    return type + " " + iteration + varName + " = " + value + ";\n";
+  } else {
+    window.alert("Please confirm asterisk. It must be among *, **, or ***.");
+    return 0;
+  }
+};
+
+Blockly.c_language["variables_pointer_&"] = function (block) {
+  const value = "&" + Blockly.c_language.valueToCode(block, "VALUE", Blockly.c_language.ORDER_ASSIGNMENT);
+  return [value, Blockly.c_language.ORDER_ATOMIC];
+};
+
+Blockly.c_language["variables_pointer_*"] = function (block) {
+  const value = "*" + Blockly.c_language.valueToCode(block, "VALUE", Blockly.c_language.ORDER_ASSIGNMENT);
+  return [value, Blockly.c_language.ORDER_ATOMIC];
+};

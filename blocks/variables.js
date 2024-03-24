@@ -275,3 +275,267 @@ Blockly.Blocks.variables_declare = {
     }
   },
 };
+
+/**
+ * ---------------------Pointer Blocks-------------------------
+ */
+/**
+ * [Toolbox][Pointer] - Select block
+ */
+Blockly.Blocks.variables_pointer_get = {
+  init: function () {
+    if (LOG_NAME_BLOCK) console.log(`${rootVariables} variables_pointer_get`);
+    this.setColour(25);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.POINTER_GET_TITLE)
+        .appendField(new Blockly.FieldVariablePointer(Blockly.Msg.SELECT_MENU, null, this), "VAR")
+        .appendField(Blockly.Msg.VARIABLES_GET_TAIL);
+    this.setOutput(true, "Pointer");
+    this.setTooltip(Blockly.Msg.VARIABLES_GET_TOOLTIP);
+    this.contextMenuMsg_ = Blockly.Msg.VARIABLES_GET_CREATE_SET;
+    this.contextMenuType_ = "variables_pointer_set";
+    this.tag = Blockly.Msg.TAG_VARIABLE_POINTER_GET;
+  },
+  getVars: function () {
+    return [this.getFieldValue("VAR")];
+  },
+  getPos: function () {
+    return this.getRelativeToSurfaceXY().y;
+  },
+  renameVar: function (oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getFieldValue("VAR"))) {
+      this.setFieldValue(newName, "VAR");
+    }
+  },
+  customContextMenu: function (menu) {
+    const item = {
+      enabled: true,
+    };
+    const varName = this.getFieldValue("VAR");
+    item.text = this.contextMenuMsg_.replace("%1", varName);
+    const field = goog.dom.createDom("field", null, varName);
+    field.setAttribute("name", "VAR");
+    const block = goog.dom.createDom("block", null, field);
+    block.setAttribute("type", this.contextMenuType_);
+    item.callback = Blockly.ContextMenu.callbackFactory(this, block);
+    menu.push(item);
+  },
+  onchange: function () {
+    Blockly.Blocks.requireInFunction(this);
+    const varName = this.getFieldValue("VAR");
+    const type = Blockly.FieldDropdown.prototype.getTypefromVars(varName, 0);
+    const ptrType = Blockly.FieldDropdown.prototype.getTypefromVars(varName, 5);
+    if (ptrType === "*") {
+      this.setOutputType("PTR", type);
+    } else if (ptrType === "**") {
+      this.setOutputType("DBPTR", type);
+    }
+  },
+  setOutputType: Blockly.Blocks.variables_get.setOutputType
+};
+
+/**
+ * [Toolbox][Pointer] - Set Select to block
+ */
+Blockly.Blocks.variables_pointer_set = {
+  init: function () {
+    if (LOG_NAME_BLOCK) console.log(`${rootVariables} variables_pointer_set`);
+    this.setColour(25);
+    this.interpolateMsg(
+      Blockly.Msg.VARIABLES_SET_TITLE + " %1 " + Blockly.Msg.VARIABLES_SET_TAIL + " %2",
+      ["VAR", null, Blockly.ALIGN_RIGHT],
+      ["VALUE", null, Blockly.ALIGN_RIGHT],
+      Blockly.ALIGN_RIGHT
+    );
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.VARIABLES_SET_TOOLTIP);
+    this.contextMenuMsg_ = Blockly.Msg.VARIABLES_SET_CREATE_GET;
+    this.contextMenuType_ = "variables_pointer_get";
+    this.tag = Blockly.Msg.TAG_VARIABLE_POINTER_SET;
+  },
+  getVars: function () {
+    return [this.getInputTargetBlock("VAR")];
+  },
+  getPos: function () {
+    return this.getRelativeToSurfaceXY().y;
+  },
+  renameVar: function (oldName, newName) {
+    const inputBlock = this.getInputTargetBlock("VAR");
+    if (Blockly.Names.equals(oldName, inputBlock.getFieldValue("VAR"))) {
+      inputBlock.setFieldValue(newName, "VAR");
+    }
+  },
+  customContextMenu: Blockly.Blocks.variables_pointer_get.customContextMenu,
+  onchange: function () {
+    Blockly.Blocks.requireInFunction(this);
+    const inputBlock = this.getInputTargetBlock("VAR");
+    if (inputBlock) {
+      const inputType = inputBlock.type;
+      if (inputType !== "variables_pointer_*") {
+        const varName = inputBlock.getFieldValue("VAR");
+        const varType = Blockly.FieldDropdown.prototype.getTypefromVars(varName, 0);
+        Blockly.Blocks.setCheckPointer(this, varType, "VALUE");
+      } else {
+        const childBlock = inputBlock.childBlocks_[0];
+        if (childBlock.getVars) {
+          const varName = childBlock.getVars()[0];
+          const varType = Blockly.FieldDropdown.prototype.getTypefromVars(varName, 0);
+          Blockly.Blocks.setCheckVariable(this, varType, "VALUE");
+        }
+      }
+    }
+  }
+};
+
+/**
+ * [Toolbox][Pointer] - Init pointer
+ */
+Blockly.Blocks.variables_pointer_declare = {
+  init: function () {
+    if (LOG_NAME_BLOCK) console.log(`${rootVariables} variables_pointer_declare`);
+    var a = [
+      [Blockly.Msg.VARIABLES_SET_TYPE_INT, "int"],
+      [Blockly.Msg.VARIABLES_SET_TYPE_UNSIGNED_INT, "unsigned int"],
+      [Blockly.Msg.VARIABLES_SET_TYPE_FLOAT, "float"],
+      [Blockly.Msg.VARIABLES_SET_TYPE_DOUBLE, "double"],
+      [Blockly.Msg.VARIABLES_SET_TYPE_CHAR, "char"]
+    ];
+    this.setColour(25);
+    var b = Blockly.Procedures.findLegalName(Blockly.Msg.VARIABLES_POINTER_DECLARE_DEFAULT_NAME, this);
+    this.interpolateMsg("%1 " + Blockly.Msg.VARIABLES_POINTER_DECLARE_TITLE + Blockly.Msg.VARIABLES_POINTER_DECLARE_ITERATION +
+      " %2 " + Blockly.Msg.VARIABLES_DECLARE_NAME + " %3 " + Blockly.Msg.VARIABLES_DECLARE_INIT + " %4 ", ["TYPES", new Blockly.FieldDropdown(a, null, this)], ["ITERATION", new Blockly.FieldTextInput("*")], ["VAR", new Blockly.FieldTextInput(b, Blockly.Procedures.rename)], ["VALUE", null, Blockly.ALIGN_RIGHT], Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(!0);
+    this.setNextStatement(!0);
+    this.setTooltip(Blockly.Msg.VARIABLES_DECLARE_TOOLTIP);
+    this.contextMenuMsg_ = Blockly.Msg.VARIABLES_SET_CREATE_GET;
+    this.contextMenuType_ = "variables_pointer_get";
+    this.tag = Blockly.Msg.TAG_VARIABLE_POINTER_DECLARE;
+    this.oldName = b
+  },
+  initVar: Blockly.Blocks.define_declare.initVar,
+  getDist: function () {
+    return "p"
+  },
+  getSpec: function () {
+    return this.getFieldValue("ITERATION")
+  },
+  getType: function () {
+    return this.getFieldValue("TYPES")
+  },
+  getTypes: function () {
+    return "**" == this.getFieldValue("ITERATION") ? ["db" + this.getFieldValue("TYPES")] : [this.getFieldValue("TYPES")]
+  },
+  getScope: Blockly.Blocks.variables_declare.getScope,
+  getPos: function () {
+    return this.getRelativeToSurfaceXY().y
+  },
+  getVars: function () {
+    return [this.getFieldValue("VAR")]
+  },
+  getDeclare: function () {
+    return [this.getFieldValue("VAR")]
+  },
+  renameVar: function (a, b) {
+    Blockly.Names.equals(a, this.getFieldValue("VAR")) && this.setFieldValue(b, "VAR")
+  },
+  customContextMenu: Blockly.Blocks.variables_pointer_get.customContextMenu,
+  onchange: function () {
+    Blockly.Blocks.variablePlaceCheck(this);
+    var a = this.getFieldValue("TYPES");
+    0 == a && (a = "int");
+    "*" == this.getFieldValue("ITERATION") ? Blockly.Blocks.setCheckPointer(this, a, "VALUE") : "**" == this.getFieldValue("ITERATION") && Blockly.Blocks.setCheckPointer(this,
+      "db" + a, "VALUE");
+    a = this.getFieldValue("VAR");
+    if (this.oldName != a) {
+      var b = this.getScope();
+      b && Blockly.Variables.renameVariablebyScope(this.oldName, a, b[0]);
+      this.oldName = a
+    }
+  }
+};
+
+/**
+ * [Toolbox][Pointer] - Block "&" address
+ */
+Blockly.Blocks["variables_pointer_&"] = {
+  init: function () {
+    if (LOG_NAME_BLOCK) console.log(`${rootVariables} variables_pointer_&`);
+    this.setColour(25);
+    this.interpolateMsg(
+      "& %1 ",
+      ["VALUE", "Variable VAR_INT VAR_UNINT VAR_FLOAT VAR_DOUBLE VAR_CHAR Array Pointer PTR_INT PTR_UNINT PTR_FLOAT PTR_DOUBLE PTR_CHAR".split(" "), Blockly.ALIGN_RIGHT],
+      Blockly.ALIGN_RIGHT
+    );
+    this.setOutput(true, "Address");
+    this.tag = Blockly.Msg.TAG_VARIABLE_POINTER_ADDR;
+  },
+  onchange: function () {
+    const valueBlock = this.getInputTargetBlock("VALUE");
+    if (valueBlock) {
+      const vars = valueBlock.getVars();
+      const type = Blockly.FieldDropdown.prototype.getTypefromVars(vars, 0);
+      if (valueBlock.type.startsWith("variables")) {
+        if (valueBlock.type.includes("pointer")) {
+          this.setOutputType("DBPTR", type);
+        } else if (valueBlock.type.includes("array")) {
+          const varIdxLength = Blockly.FieldVariableArray.getBlockIdxLength(vars);
+          const inputIdxLength = valueBlock.getInputIdxLength();
+          if (varIdxLength === inputIdxLength) {
+            this.setOutputType("PTR", type);
+          } else {
+            this.setOutputType("DBPTR", type);
+          }
+        } else {
+          this.setOutputType("PTR", type);
+        }
+      }
+    }
+  },
+  setOutputType: Blockly.Blocks.variables_get.setOutputType
+};
+
+
+/**
+ * [Toolbox][Pointer] - Block "*" pointer
+ */
+Blockly.Blocks["variables_pointer_*"] = {
+  init: function () {
+    if (LOG_NAME_BLOCK) console.log(`${rootVariables} variables_pointer_**`);
+    this.setColour(25);
+    this.interpolateMsg(
+      "* %1 ",
+      ["VALUE", "Pointer PTR_INT PTR_UNINT PTR_FLOAT PTR_DOUBLE PTR_CHAR DBPTR_INT DBPTR_UNINT DBPTR_FLOAT DBPTR_DOUBLE DBPTR_CHAR Array Aster".split(" "), Blockly.ALIGN_RIGHT],
+      Blockly.ALIGN_RIGHT
+    );
+    this.setOutput(true, "Aster");
+    this.tag = Blockly.Msg.TAG_VARIABLE_POINTER_ASTR;
+  },
+  onchange: function () {
+    const valueBlock = this.getInputTargetBlock("VALUE");
+    if (valueBlock) {
+      const vars = valueBlock.getVars();
+      if (valueBlock.type.startsWith("variables_pointer_*")) {
+        if (valueBlock.getInputTargetBlock("VALUE")) {
+          let innerValueBlock = valueBlock.getInputTargetBlock("VALUE");
+          if (innerValueBlock && innerValueBlock.type.startsWith("variables")) {
+            const type = Blockly.FieldDropdown.prototype.getTypefromVars(vars, 0);
+            const subType = Blockly.FieldDropdown.prototype.getTypefromVars(vars, 5);
+            if (subType === "**") {
+              this.setOutputType("VAR", type);
+            }
+          }
+        } else if (valueBlock.type.startsWith("variables")) {
+          const type = Blockly.FieldDropdown.prototype.getTypefromVars(vars, 0);
+          const idxLength = Blockly.FieldVariableArray.getBlockIdxLength(vars);
+          const inputIdxLength = valueBlock.getInputIdxLength();
+          if (valueBlock.type.includes("pointer") && inputIdxLength < idxLength) {
+            this.setOutputType("VAR", type);
+          }
+        }
+      }
+    }
+  },
+  setOutputType: Blockly.Blocks.variables_get.setOutputType
+};
