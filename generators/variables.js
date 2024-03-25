@@ -63,6 +63,38 @@ Blockly.c_language.variables_pointer_set = function (block) {
   return varName + " = " + value + ";\n";
 };
 
+Blockly.c_language.pointerTypeCheckInPrint = function (f) {
+  let formatSpecifier = "";
+  const variables = Blockly.Variables.allVariables();
+
+  for (let j = 0; j < variables.length; j++) {
+    if (f === variables[j][2]) {
+      const type = variables[j][0];
+      if (variables[j][5] === "*") {
+        switch (type) {
+          case "int":
+            formatSpecifier = "%d";
+            break;
+          case "unsigned int":
+            formatSpecifier = "%u";
+            break;
+          case "float":
+          case "double":
+            formatSpecifier = "%f";
+            break;
+          case "char":
+            formatSpecifier = "%c";
+            break;
+        }
+      } else {
+        formatSpecifier = (type === "dbchar") ? "%s" : "%p";
+      }
+      break;
+    }
+  }
+  return formatSpecifier;
+};
+
 Blockly.c_language.variables_pointer_declare = function (block) {
   const value = Blockly.c_language.valueToCode(block, "VALUE", Blockly.c_language.ORDER_ASSIGNMENT) || "NULL";
   const varName = Blockly.c_language.variableDB_.getName(block.getFieldValue("VAR"), Blockly.Variables.NAME_TYPE);
