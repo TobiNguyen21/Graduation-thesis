@@ -137,7 +137,7 @@ Blockly.Blocks.math_auto_convert_type = {
     onchange: Blockly.Blocks.requireInFunction
 };
 
-// 2018/06/19 support Array operand
+// devide get remainder
 Blockly.Blocks.math_modulo = {
     init: function () {
         if (LOG_NAME_BLOCK) console.log(`${rootMath} math_modulo`);
