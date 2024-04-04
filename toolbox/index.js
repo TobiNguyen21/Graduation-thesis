@@ -94,15 +94,16 @@ const categories = [
   {
     name: "Loops",
     blocks: [
-      { type: "controls_whileUntil" },
-      { type: "controls_doWhile" },
       {
         type: "controls_for",
-        value: '<value name="FROM"><block type="math_number"><field name="NUM">1</field></block></value>' +
+        value: '<value name="FROM"><block type="math_number"><field name="NUM">0</field></block></value>' +
           '<value name="TO"><block type="math_number"><field name="NUM">10</field></block></value>' +
           '<value name="BY"><block type="math_number"><field name="NUM">1</field></block></value>'
       },
-      { type: "controls_flow_statements" }
+      { type: "controls_flow_statements" },
+      { type: "controls_whileUntil" },
+      { type: "controls_doWhile" },
+      { type: "library_stdlib_sizeof"}
     ]
   },
   {

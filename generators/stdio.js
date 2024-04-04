@@ -21,7 +21,7 @@ Blockly.c_language.library_stdio_printf = function (p) {
       if (
         ["math_prev_inc_decrement", "math_post_inc_decrement", "math_modulo", "library_stdlib_abs",
           "library_string_strlen", "library_stdlib_rand", "library_stdlib_number_forRandScope1",
-          "library_stdlib_number_forRandScope100", "library_stdlib_sizeof_forMalloc",
+          "library_stdlib_number_forRandScope100", "library_stdlib_sizeof_forMalloc", "library_stdlib_sizeof",
           "library_stdlib_arithmetic_forMalloc", "library_stdlib_number_forMalloc"].includes(blockType)
       ) {
         formatString += "%d";

@@ -8,3 +8,4 @@ document.write(`<script src="${generators}/procedures.js"></script>`);
 document.write(`<script src="${generators}/logic.js"></script>`);
 document.write(`<script src="${generators}/condition.js"></script>`);
 document.write(`<script src="${generators}/array.js"></script>`);
+document.write(`<script src="${generators}/loops.js"></script>`);
