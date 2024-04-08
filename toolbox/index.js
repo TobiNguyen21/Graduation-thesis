@@ -103,7 +103,9 @@ const categories = [
       { type: "controls_flow_statements" },
       { type: "controls_whileUntil" },
       { type: "controls_doWhile" },
-      { type: "library_stdlib_sizeof"}
+      { type: "library_stdlib_sizeof"},
+      { type: "math_arithmetic"
+      },
     ]
   },
   {
@@ -177,14 +179,14 @@ const categories = [
           { type: "library_math_numcheck" },
           { type: "library_math_numcompare" }
         ]
-      },
-      {
-        name: "Time",
-        blocks: [
-          { type: "library_time_current" },
-          { type: "library_time_requiredTime" }
-        ]
       }
+      // {
+      //   name: "Time",
+      //   blocks: [
+      //     { type: "library_time_current" },
+      //     { type: "library_time_requiredTime" }
+      //   ]
+      // }
     ]
   },
   {
