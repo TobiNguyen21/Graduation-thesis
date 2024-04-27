@@ -1,130 +1,108 @@
-/* get Bootstrap config on http://getbootstrap.com/customize/?id=581587aab022e010e9c9 */
-/*@import url(http://fonts.googleapis.com/earlyaccess/nanumbrushscript.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanumpenscript.css);
-@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);  */
-
-/* Reset the container */
-.container {
-  max-width: none !important;
-  /*width: 1280px;*/
-  width: 100%;
-}
-.container .navbar-header,
-.container .navbar-collapse {
-  margin-right: 0;
-  margin-left: 0;
-} 
-.header {
-  /*width: 1350px; */
-  width: 100%;
-  min-width: 1280px;
-}
-/* Always float the navbar header */
-.navbar-header {
-  float: left;
-}
-/* Undo the collapsing navbar */
-.navbar-collapse {
-  display: block !important;
-  height: auto !important;
-  padding-bottom: 0;
-  overflow: visible !important;
-}
-.navbar-toggle {
-  display: none;
-}
-.navbar-brand {
-  margin-left: -15px;
-}
-/* Always apply the floated nav */
-.navbar-nav {
-  float: left;
+* {
   margin: 0;
+  padding: 0;
 }
-.navbar-nav > li {
-  float: left;
+h1 {
+  text-align: center;
 }
-.navbar-nav > li > a {
-  padding: 15px;
+nav ul {
+  list-style: none;
+  margin: 20px;
 }
-/* Redeclare since we override the float above */
-.navbar-nav.navbar-right {
-  float: right;
+
+nav ul li {
+  display: inline;
+  padding: 8px;
 }
-/* Undo custom dropdowns */
-.navbar .open .dropdown-menu {
-  position: absolute;
-  float: left;
-  background-color: #fff;
-  border: 1px solid #cccccc;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-width: 0 1px 1px;
-  border-radius: 0 0 4px 4px;
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+.container {
+  width: 100%; 
+  display: flex;
+  justify-content: space-around;
 }
-.navbar .open .dropdown-menu > li > a {
-  color: #333;
+button {
+  outline: none;
+  border-radius: .2em;
+  border: 1px solid #222;
+  width: 150px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
 }
-.navbar .open .dropdown-menu > li > a:hover,
-.navbar .open .dropdown-menu > li > a:focus,
-.navbar .open .dropdown-menu > .active > a,
-.navbar .open .dropdown-menu > .active > a:hover,
-.navbar .open .dropdown-menu > .active > a:focus {
-  color: #fff !important;
-  background-color: #428bca !important;
+
+li:first-child button {
+  background-color: #175b83;
+  color: #fff;
 }
-.navbar .open .dropdown-menu > .disabled > a,
-.navbar .open .dropdown-menu > .disabled > a:hover,
-.navbar .open .dropdown-menu > .disabled > a:focus {
-  color: #999 !important;
-  background-color: transparent !important;
+
+li:first-child button:hover {
+  background-color: #3d84ad;
 }
-#main-wrapper {
-  height: auto;
-  min-height: 560px;
-  min-width: 1280px;
+li:nth-child(2) button,
+li:nth-child(5) button {
+  background-color: green;
+  color: #fff;
 }
-#terminal-wrapper {
-  height: auto;
+
+li:nth-child(2) button:hover,
+li:nth-child(5) button:hover {
+  background-color: #008000a3;
 }
-#terminal {
-  width: 100%;
-  height: 300px;
+
+li:nth-child(3) button {
+  background-color: #444;
+  color: #fff;
 }
-#blocklyDiv {
-  /* height: auto; */
-  height: -moz-calc(100vh - 150px);     /* Firefox  */
-  height: -webkit-calc(100vh - 150px);  /* WebKit   */
-  height: -o-calc(100vh - 150px);       /* Opera    */
-  height: calc(100vh - 150px);          /* Standard */    
-  min-height: 560px;
-  margin-bottom: 0;
-  padding: 0px !important;
+
+li:nth-child(3) button:hover {
+  background-color: #8c8c8c;
 }
-#code-wrapper {
-  height: auto;
+li:nth-child(7) button {
+  background-color: #810202;
+  color: #ccc;
 }
-#code {
-  /* height: auto; */
-  height: -moz-calc(100vh - 150px);     /* Firefox  */
-  height: -webkit-calc(100vh - 150px);  /* WebKit   */
-  height: -o-calc(100vh - 150px);       /* Opera    */
-  height: calc(100vh - 150px);          /* Standard */   
-  min-height: 560px;
-  margin-bottom: 0;
+
+li:nth-child(7) button:hover {
+  background-color: #af5151;
 }
-#toolbox {
-  display: none;
+input[type="checkbox"] {
+  margin-left: 5px;
 }
-#footer {
-  border-top: 1px solid #e5e5e5;
+.outputs {
+  width: 39%;
+  display: flex;
+  flex-direction: column;
+  margin-left: 5px;
 }
-#program_name {
-    background-color: transparent;
-    border: none !important;
-    font-size: 24px;
+textarea {
+  display: inline-block; 
+  resize: none;
+  padding: 2px;
+  font-size: 1.2em;
+  height: 39vh;
+}
+
+#outputJS {
+  background-color: #333;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+#outputC {
+  background-color: #333;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+
+#output {
+  background-color: #000;
+  color: #11ec0a;
+  margin-top: 4px;
+}
+
+footer {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  margin: 20px;
 }
