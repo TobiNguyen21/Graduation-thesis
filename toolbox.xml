@@ -11,11 +11,15 @@
         <block type="single_character_input"></block>
     </category>
     <category name="Input" colour="%{BKY_INPUT_HUE}">
-        <block type="text_prompt_ext">
+        <!-- <block type="text_prompt_ext">
             <value name="TEXT">
                 <shadow type="text">
                     <field name="TEXT">abc</field>
                 </shadow>
+            </value>
+        </block> -->
+        <block type="text_scanf">
+            <value name="TEXT">
             </value>
         </block>
     </category>
