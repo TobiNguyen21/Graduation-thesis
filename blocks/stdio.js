@@ -8,6 +8,10 @@ Blockly.Blocks.text_print = {
       args0: [{
         type: "input_value",
         name: "TEXT"
+      }, {
+        type: "field_dropdown",
+        name: "TYPE",
+        options: [["%s", "%s"], ["%d", "%d"], ["%c", "%c"]]
       }],
       previousStatement: null,
       nextStatement: null,
@@ -16,26 +20,36 @@ Blockly.Blocks.text_print = {
       helpUrl: Blockly.Msg.TEXT_PRINT_HELPURL
     })
   },
-  onchange: function (){
-    // let connectedBlock = null;
-    // const inputConnection = this.getInput('TEXT').connection;
-    
-    // // Kiểm tra xem có kết nối không
-    // if (inputConnection.targetConnection) {
-    //   // Nếu có kết nối, lấy block đang kết nối
-    //   connectedBlock = inputConnection.targetConnection.sourceBlock_;
-    //   console.log('Connected block type:', connectedBlock.type);
+  onchange: function () {
+    let connectedBlock = null;
+    const inputConnection = this.getInput('TEXT').connection;
 
-    //   if (connectedBlock.type === 'text') {
-    //     const textValue = connectedBlock.getFieldValue('TEXT');
-    //     console.log('Text value of connected block:', textValue);
-    //   }
+    if (inputConnection.targetConnection) {
+      
+      connectedBlock = inputConnection.targetConnection.sourceBlock_;
+      // %d: math_number, single_character_input, text, variables_get
 
-    //   if(connectedBlock.type === 'variables_get'){
-    //     const value = connectedBlock.getFieldValue('variables_get');
-    //     console.log('Text value of connected block:', value);
-    //   }
-    // }
+      if (connectedBlock.type === 'text') {
+        this.getField('TYPE').setValue('%s');
+      }
+
+      if (connectedBlock.type === 'math_number') {
+        this.getField('TYPE').setValue('%d');
+      }
+
+      if (connectedBlock.type === 'single_character_input') {
+        this.getField('TYPE').setValue('%c')
+      }
+
+      if (connectedBlock.type === 'variables_get') {
+        const memory = JSON.parse(localStorage.getItem('memory'));
+        const variableName = connectedBlock.getField("VAR").getVariable().name;
+        if (memory[variableName]['type'] === 'INT')
+          this.getField('TYPE').setValue('%d');
+        if (memory[variableName]['type'] === 'CHAR')
+          this.getField('TYPE').setValue('%c');
+      }
+    }
   }
 };
 
@@ -96,12 +110,12 @@ Blockly.Blocks.text_prompt = {
 };
 
 Blockly.Blocks['single_character_input'] = {
-  init: function() {
-    this.setColour(230); 
+  init: function () {
+    this.setColour(230);
     this.appendDummyInput()
-        .appendField(this.newQuote_(!0))
-        .appendField(new Blockly.FieldTextInput("a", this.validateInput), "CHAR")
-        .appendField(this.newQuote_(!1));
+      .appendField(this.newQuote_(!0))
+      .appendField(new Blockly.FieldTextInput("a", this.validateInput), "CHAR")
+      .appendField(this.newQuote_(!1));
     this.setOutput(true, "Character");
   },
   newQuote_: function (a) {
@@ -109,8 +123,7 @@ Blockly.Blocks['single_character_input'] = {
       "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAkCAYAAABixKGjAAAACXBIWXMAAAsTAAALEwEAmpwYAAABrElEQVRIia3WMWsUQRyG8WcOYmw8kQjRBIIgCBoQLYJgEZA02qopRbCxEMRvYBWEpBHyCdKIjZA+GCwCMRYBG40gaHVqwIAoaPdY3AbP3M5udmZfWFjY2d/MDvPfGciMekJdVpfUTq43CF9Xv/ovV9pAJ9RnDmdNPZYD3y5BB3MvBe2qKzVwT73WFJ5UN2vgx+rxpvBZ9W0FuqVON0IL+Jy6UwE/UI+kwFM1I55tjBZw1/6yKktPvZgEF/iTCvhyDny1YirmcuCuuh6BF5LhAr8bgbfVUznwmPFCaV7SB/AbEfijOpVidgq4A9yKtHkH7CbjwDhwKdJmI4TwJwcHGIm0eZ8CAwQAdQZ4E2nzBXhZ3O//R3aAdWCr9qvU2YrCqUpPvWlk78zdUE8DL4Dn6tG28f3MA3di+B7wLbODR+pkGf69BfwCcKYM7wCjmThA6ch/AJ9awMeH8BDCL2C1BfznEF7kFfnz/t/7g/hn4HUm3os+UWcSK1X7p7HqulHvJ8CH/+erDxvCzU5c6nl1sQZ+qp6MGeEQnYwCE/TX8Ehx/QY+hBD2Go24zfwFdQY82azgsTIAAAAASUVORK5CYII=",
       6, 12, '"')
   },
-  validateInput: function(newValue) {
+  validateInput: function (newValue) {
     return newValue.length <= 1 ? newValue : null;
   }
 };
-
