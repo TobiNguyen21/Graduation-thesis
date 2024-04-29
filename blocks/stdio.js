@@ -109,6 +109,50 @@ Blockly.Blocks.text_prompt = {
   domToMutation: Blockly.Blocks.text_prompt_ext.domToMutation
 };
 
+Blockly.Blocks.text_scanf = {
+  init: function () {
+    this.jsonInit({
+      message0: `scanf ( \"%2\", & %1 );`,
+      args0: [{
+        type: "input_value",
+        name: "TEXT"
+      }, {
+        type: "field_dropdown",
+        name: "TYPE",
+        options: [["%s", "%s"], ["%d", "%d"], ["%c", "%c"]]
+      }],
+      previousStatement: null,
+      nextStatement: null,
+      style: "text_blocks",
+    })
+  },
+  onchange: function () {
+    let connectedBlock = null;
+    const inputConnection = this.getInput('TEXT').connection;
+
+    if (inputConnection.targetConnection) {
+      
+      connectedBlock = inputConnection.targetConnection.sourceBlock_;
+
+      if (connectedBlock.type === 'variables_get') {
+        const memory = JSON.parse(localStorage.getItem('memory'));
+        const variableName = connectedBlock.getField("VAR").getVariable().name;
+
+        if (memory[variableName]['type'] === 'INT')
+          this.getField('TYPE').setValue('%d');
+        if (memory[variableName]['type'] === 'CHAR')
+          this.getField('TYPE').setValue('%c');
+
+        memory[variableName]['value'] = 'pending';
+        localStorage.setItem('memory', JSON.stringify(memory));
+      }else{
+        window.alert("input must be a variable.");
+        connectedBlock.dispose();
+      }
+    }
+  }
+};
+
 Blockly.Blocks['single_character_input'] = {
   init: function () {
     this.setColour(230);
