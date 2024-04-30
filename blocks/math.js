@@ -48,7 +48,7 @@ Blockly.defineBlocksWithJsonArray([{
     extensions: ["math_op_tooltip"]
 }, {
     type: "math_single",
-    message0: "%1 ( %2 ) ;",
+    message0: "%1 ( %2 )",
     args0: [{
         type: "field_dropdown",
         name: "OP",
@@ -160,7 +160,7 @@ Blockly.defineBlocksWithJsonArray([{
     extensions: ["math_change_tooltip"]
 }, {
     type: "math_round",
-    message0: "%1 ( %2 ) ;",
+    message0: "%1 ( %2 )",
     args0: [{
         type: "field_dropdown",
         name: "OP",
@@ -389,21 +389,21 @@ Blockly.defineBlocksWithJsonArray([
     },
     {
         type: "math_pow",
-        message0: "pow ( %1 , %2 ) ;",
+        message0: "pow ( %1 , %2 )",
         args0: [
-          {
-            type: "input_value",
-            name: "NUM1",
-            check: "Number"
-          },
-          {
-            type: "input_value",
-            name: "NUM2",
-            check: "Number"
-          }
+            {
+                type: "input_value",
+                name: "NUM1",
+                check: "Number"
+            },
+            {
+                type: "input_value",
+                name: "NUM2",
+                check: "Number"
+            }
         ],
         inputsInline: true,
         output: "Number",
         style: "math_blocks"
-      }
+    }
 ])
