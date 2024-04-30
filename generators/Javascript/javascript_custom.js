@@ -51,6 +51,51 @@ Blockly.JavaScript.variables_assignment = function (block) {
         }
     }
 
+    if (type_block_b === 'math_arithmetic') {
+        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_math_arithmetic';
+        else {
+            window.alert("Error: Type mismatch.");
+            block.getInputTargetBlock('B').dispose();
+            return '';
+        }
+    }
+
+    if (type_block_b === 'math_modulo') {
+        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_math_modulo';
+        else {
+            window.alert("Error: Type mismatch.");
+            block.getInputTargetBlock('B').dispose();
+            return '';
+        }
+    }
+
+    if (type_block_b === 'math_round') {
+        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_math_round';
+        else {
+            window.alert("Error: Type mismatch.");
+            block.getInputTargetBlock('B').dispose();
+            return '';
+        }
+    }
+
+    if (type_block_b === 'operator_bitwise') {
+        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_operator_bitwise';
+        else {
+            window.alert("Error: Type mismatch.");
+            block.getInputTargetBlock('B').dispose();
+            return '';
+        }
+    }
+    
+    if (type_block_b === 'math_pow') {
+        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_math_pow';
+        else {
+            window.alert("Error: Type mismatch.");
+            block.getInputTargetBlock('B').dispose();
+            return '';
+        }
+    }
+
     localStorage.setItem('memory', JSON.stringify(memory));
 
     return a + ' = ' + b + ';\n';
@@ -84,7 +129,6 @@ Blockly.JavaScript['text_print'] = function (block) {
 
         if (connectedBlock.type === 'variables_get') {
             const variable = Blockly.JavaScript.variableDB_.getName(connectedBlock.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME);
-            // console.log({ memory, variable, rs: memory[variable]['value'] });
             if (memory[variable]['value'] === 'no_value') {
                 window.alert("Variable not assigned");
                 connectedBlock.dispose();
@@ -118,6 +162,24 @@ Blockly.JavaScript['text_scanf'] = function (block) {
         return value_text + ` = window.prompt('${msgData}')[0];\n`;
     }
     return '';
+};
+
+// Generator for bitwise block
+Blockly.JavaScript['operator_bitwise'] = function (block) {
+    const value_a = Blockly.JavaScript.valueToCode(block, 'A', Blockly.JavaScript.ORDER_ATOMIC);
+    const dropdown_op = block.getFieldValue('OP');
+    const value_b = Blockly.JavaScript.valueToCode(block, 'B', Blockly.JavaScript.ORDER_ATOMIC);
+   
+    const code = value_a + ' ' + dropdown_op + ' ' + value_b;
+    return [code, Blockly.JavaScript.ORDER_NONE];
+}
+
+// Generator for pow block
+Blockly.JavaScript['math_pow'] = function (block) {
+    const valueNum1 = Blockly.JavaScript.valueToCode(block, 'NUM1', Blockly.JavaScript.ORDER_NONE) || '0';
+    const valueNum2 = Blockly.JavaScript.valueToCode(block, 'NUM2', Blockly.JavaScript.ORDER_NONE) || '0';
+    const code = 'Math.pow(' + valueNum1 + ', ' + valueNum2 + ')';
+    return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
 
 // Generator for main block

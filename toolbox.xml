@@ -67,11 +67,23 @@
         <block type="controls_forEach"></block>
         <block type="controls_flow_statements"></block>
     </category> -->
-    <!-- <category name="%{BKY_CATMATH}" colour="%{BKY_MATH_HUE}">
+    <category name="%{BKY_CATMATH}" colour="%{BKY_MATH_HUE}">
         <block type="math_number" gap="32">
             <field name="NUM">123</field>
         </block>
         <block type="math_arithmetic">
+            <value name="A">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+            <value name="B">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="operator_bitwise">
             <value name="A">
                 <shadow type="math_number">
                     <field name="NUM">1</field>
@@ -90,7 +102,7 @@
                 </shadow>
             </value>
         </block>
-        <block type="math_trig">
+        <!-- <block type="math_trig">
             <value name="NUM">
                 <shadow type="math_number">
                     <field name="NUM">45</field>
@@ -104,19 +116,32 @@
                     <field name="NUM">0</field>
                 </shadow>
             </value>
-        </block>
+        </block> -->
         <block type="math_round">
             <value name="NUM">
                 <shadow type="math_number">
-                    <field name="NUM">3.1</field>
+                    <field name="NUM">1.4</field>
                 </shadow>
             </value>
         </block>
-        <block type="math_on_list"></block>
+        <block type="math_pow">
+            <value name="NUM1">
+                <shadow type="math_number">
+                    <field name="NUM">2</field>
+                </shadow>
+            </value>
+            <value name="NUM2">
+                <shadow type="math_number">
+                    <field name="NUM">3</field>
+                </shadow>
+            </value>
+        </block>
+
+        <!-- <block type="math_on_list"></block> -->
         <block type="math_modulo">
             <value name="DIVIDEND">
                 <shadow type="math_number">
-                    <field name="NUM">64</field>
+                    <field name="NUM">99</field>
                 </shadow>
             </value>
             <value name="DIVISOR">
@@ -125,7 +150,7 @@
                 </shadow>
             </value>
         </block>
-        <block type="math_constrain">
+        <!-- <block type="math_constrain">
             <value name="VALUE">
                 <shadow type="math_number">
                     <field name="NUM">50</field>
@@ -166,8 +191,8 @@
                     <field name="NUM">1</field>
                 </shadow>
             </value>
-        </block>
-    </category> -->
+        </block> -->
+    </category>
     <!-- <category name="%{BKY_CATTEXT}" colour="%{BKY_TEXTS_HUE}">
         <block type="text"></block>
         <block type="text_multiline"></block>

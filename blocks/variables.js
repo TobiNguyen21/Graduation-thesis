@@ -203,7 +203,6 @@ Blockly.Blocks['variables_declare'] = {
     // }
 };
 
-
 Blockly.Blocks['variables_assignment'] = {
     init: function () {
         if (LOG_NAME_BLOCK) console.log(`${rootVariables} var_assignment`);
