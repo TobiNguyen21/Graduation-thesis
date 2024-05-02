@@ -28,12 +28,25 @@ Blockly.JavaScript.variables_assignment = function (block) {
     if (type_block_b === 'variables_get') {
         const object_a = memory[a];
         const object_b = memory[b];
-        if (object_b['value'] === 'no_value' || object_b['type'] !== object_a['type']) {
-            window.alert("Error: Type mismatch or variable not assigned.");
-            block.getInputTargetBlock('B').dispose();
-            return '';
+        if (type_block_a === 'lists_getValueAtIndex') {
+            const result = getArrayAndIndex(a);
+            if (result === null) return '';
+            const { arrayName, index } = result;
+            if (memory[arrayName]?.type !== object_b['type']) {
+                window.alert("Error: type variable is not match");
+                block.getInputTargetBlock('B').dispose();
+                return '';
+            } else {
+                memory[arrayName].value[index] = object_b['value'];
+            }
         } else {
-            object_a['value'] = object_b['value'];
+            if (object_b['value'] === 'no_value' || object_b['type'] !== object_a['type']) {
+                window.alert("Error: Type mismatch or variable not assigned.");
+                block.getInputTargetBlock('B').dispose();
+                return '';
+            } else {
+                object_a['value'] = object_b['value'];
+            }
         }
     }
 
@@ -43,11 +56,11 @@ Blockly.JavaScript.variables_assignment = function (block) {
     ) {
         if (type_block_a === 'lists_getValueAtIndex') {
             const result = getArrayAndIndex(a);
-            if(result===null) return '';
+            if (result === null) return '';
             const { arrayName, index } = result;
             console.log({ arrayName, index });
 
-            if(memory[arrayName]?.type === 'CHAR'){
+            if (memory[arrayName]?.type === 'CHAR') {
                 window.alert("Error: type variable is not match");
                 block.getInputTargetBlock('B').dispose();
                 return '';
@@ -55,7 +68,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
             memory[arrayName].value[index] = b;
         }
         if (type_block_a === 'variables_get') {
-            if (memory[a]['type'] === 'INT') memory[a]['value'] = b;
+            if (memory[a]?.type === 'INT') memory[a]['value'] = b;
             else {
                 window.alert("Error: Type mismatch or variable not assigned.");
                 block.getInputTargetBlock('B').dispose();
@@ -70,11 +83,11 @@ Blockly.JavaScript.variables_assignment = function (block) {
     ) {
         if (type_block_a === 'lists_getValueAtIndex') {
             const result = getArrayAndIndex(a);
-            if(result===null) return '';
+            if (result === null) return '';
             const { arrayName, index } = result;
             console.log({ arrayName, index });
 
-            if(memory[arrayName]?.type === 'INT'){
+            if (memory[arrayName]?.type === 'INT') {
                 window.alert("Error: type variable is not match");
                 block.getInputTargetBlock('B').dispose();
                 return '';
@@ -82,7 +95,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
             memory[arrayName].value[index] = b;
         }
         if (type_block_a === 'variables_get') {
-            if (memory[a]['type'] === 'CHAR') memory[a]['value'] = b;
+            if (memory[a]?.type === 'CHAR') memory[a]['value'] = b;
             else {
                 window.alert("Error: Type mismatch or variable not assigned.");
                 block.getInputTargetBlock('B').dispose();
@@ -92,7 +105,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
 
     if (type_block_b === 'math_arithmetic') {
-        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_math_arithmetic';
+        if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_arithmetic';
         else {
             window.alert("Error: Type mismatch.");
             block.getInputTargetBlock('B').dispose();
@@ -101,7 +114,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
 
     if (type_block_b === 'math_modulo') {
-        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_math_modulo';
+        if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_modulo';
         else {
             window.alert("Error: Type mismatch.");
             block.getInputTargetBlock('B').dispose();
@@ -110,7 +123,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
 
     if (type_block_b === 'math_round') {
-        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_math_round';
+        if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_round';
         else {
             window.alert("Error: Type mismatch.");
             block.getInputTargetBlock('B').dispose();
@@ -119,7 +132,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
 
     if (type_block_b === 'operator_bitwise') {
-        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_operator_bitwise';
+        if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_operator_bitwise';
         else {
             window.alert("Error: Type mismatch.");
             block.getInputTargetBlock('B').dispose();
@@ -128,7 +141,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
 
     if (type_block_b === 'math_pow') {
-        if (memory[a]['type'] === 'INT') memory[a]['value'] = 'value_of_math_pow';
+        if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_pow';
         else {
             window.alert("Error: Type mismatch.");
             block.getInputTargetBlock('B').dispose();
@@ -140,7 +153,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
         type_block_a === 'variables_array_get_name' &&
         type_block_b === 'lists_create_empty_v2'
     ) {
-        if (memory[a]['type'] === 'INT' || memory[a]['type'] === 'CHAR')
+        if (memory[a]?.type === 'INT' || memory[a]?.type === 'CHAR')
             memory[a]['value'] = b;
         else {
             window.alert("Error: Type mismatch.");
@@ -203,6 +216,17 @@ Blockly.JavaScript['text_print'] = function (block) {
                 connectedBlock.dispose();
             }
         }
+
+        if (connectedBlock.type === 'lists_getValueAtIndex') {
+            const arrayName = connectedBlock.getFieldValue("ARRAY");
+            const index = connectedBlock.getFieldValue("INDEX");
+            console.log(arrayName, index);
+            const arr = memory[arrayName]?.value ? JSON.parse(memory[arrayName]?.value) : null;
+            if (arrayName !== '--select--' && !arr[index]) {
+                window.alert("Variable not assigned");
+                connectedBlock.dispose();
+            }
+        }
     }
     return code;
 };
@@ -218,7 +242,7 @@ Blockly.JavaScript['text_scanf'] = function (block) {
     const memory = JSON.parse(localStorage.getItem('memory'));
     const msgData = `Enter data input ${value_text}:`
 
-    if (memory[value_text].value === "no_value") {
+    if (memory[value_text]?.value === "no_value") {
         memory[value_text]['value'] = 'pending';
         localStorage.setItem('memory', JSON.stringify(memory));
     }
