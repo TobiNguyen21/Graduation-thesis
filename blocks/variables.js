@@ -191,16 +191,6 @@ Blockly.Blocks['variables_declare'] = {
         this.setTooltip("");
         this.setHelpUrl("");
     },
-    // onchange: function (event) {
-    //     if (event && event.type == Blockly.Events.BLOCK_CREATE && event.blockId == this.id) {
-    //         const workspace = this.workspace;
-    //         const existingBlock = workspace.getAllBlocks().find(block => block.id != this.id && block.type == this.type);
-    //         if (existingBlock) {
-    //             window.alert("Block already exists in workspace!");
-    //             workspace.getBlockById(this.id).dispose();
-    //         }
-    //     }
-    // }
 };
 
 Blockly.Blocks['variables_assignment'] = {
@@ -208,7 +198,7 @@ Blockly.Blocks['variables_assignment'] = {
         if (LOG_NAME_BLOCK) console.log(`${rootVariables} var_assignment`);
         this.setColour(COLOUR_VAR_BLOCK);
         this.appendValueInput('A')
-            .setCheck(["Variable"])
+            .setCheck(["Variable", "variables_array_get_name"])
             .appendField('');
         this.appendValueInput('B')
             .setCheck(null)
@@ -219,23 +209,46 @@ Blockly.Blocks['variables_assignment'] = {
         this.setTooltip('');
         this.appendDummyInput().appendField(';');
     },
-    onchange : function () {
+};
 
+Blockly.Blocks['variables_array_declare'] = {
+    init: function () {
+        this.setColour(150);
+        this.getNextArrayName();
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([["int", "INT"], ["char", "CHAR"]]), "TYPE")
+            .appendField(new Blockly.FieldTextInput(this.arrayName), "VAR")
+            .appendField("[");
+        this.appendValueInput('LENGTH').setCheck('Number');
+        this.appendDummyInput().appendField("]");
+        this.appendDummyInput().appendField(";");
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    },
+    getNextArrayName: function () {
+        const workspace = Blockly.getMainWorkspace();
+        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare');
+        this.arrayName = 'arr_' + arrayBlocks.length;
     }
 };
 
-// Blockly.Blocks['variables_get_ver2'] = {
-//     init: function () {
-//         const list_var = JSON.parse(localStorage.getItem('list_var')) || [];
-//         const listSelect = list_var.map((item) => {
-//             return [item, item];
-//         });
-//         console.log({ list_var, listSelect });
-//         this.setColour(COLOUR_VAR_BLOCK);
-//         this.appendDummyInput()
-//             .appendField(new Blockly.FieldDropdown([["Select", "SELECT"], ...listSelect]), "TYPE");
-//         this.setOutput(true, null);
-//         this.setTooltip("");
-//         this.setHelpUrl("");
-//     },
-// };
+Blockly.Blocks['variables_array_get_name'] = {
+    init: function () {
+        this.setColour(100);
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown(this.getArrayOptions), "ARRAY");
+        this.setOutput(true, "variables_array_get_name");
+        this.setTooltip("");
+        this.setHelpUrl("");
+    },
+    getArrayOptions: function () {
+        const workspace = Blockly.getMainWorkspace();
+        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare');
+        const options = arrayBlocks.map(block => [block.getFieldValue('VAR'), block.getFieldValue('VAR')]);
+        return [["--Select array name--", "--select--"], ...options];
+    }
+};
+
