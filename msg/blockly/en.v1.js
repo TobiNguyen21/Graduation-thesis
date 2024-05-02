@@ -1,5 +1,20 @@
 'use strict';
 
+Blockly.Msg.LOGIC_HUE = '210';
+Blockly.Msg.LOOPS_HUE = '120';
+Blockly.Msg.MATH_HUE = '230';
+Blockly.Msg.TEXTS_HUE = '160';
+Blockly.Msg.LISTS_HUE = '260';
+Blockly.Msg.COLOUR_HUE = '20';
+Blockly.Msg.VARIABLES_HUE = '30';
+Blockly.Msg.PROCEDURES_HUE = '290';
+
+Blockly.Msg.OUTPUT_HUE = '180';
+Blockly.Msg.INPUT_HUE = '15';
+
+Blockly.Msg.MATH_SINGLE_TOOLTIP_LN = 'Return the natural logarithm of a number.';
+Blockly.Msg.MATH_SINGLE_TOOLTIP_POW10 = 'Return 10 to the power of a number.';
+
 Blockly.Msg.ADD_COMMENT = "Add Comment";
 Blockly.Msg.AUTH = "Please authorize this app to enable your work to be saved and to allow it to be shared by you.";
 Blockly.Msg.CHANGE_VALUE_TITLE = "Change value:";
@@ -51,7 +66,7 @@ Blockly.Msg.CONTROLS_IF_TOOLTIP_2 = "If a value is true, then do the first block
 Blockly.Msg.CONTROLS_IF_TOOLTIP_3 = "If the first value is true, then do the first block of statements.  Otherwise, if the second value is true, do the second block of statements.";
 Blockly.Msg.CONTROLS_IF_TOOLTIP_4 = "If the first value is true, then do the first block of statements.  Otherwise, if the second value is true, do the second block of statements.  If none of the values are true, do the last block of statements.";
 Blockly.Msg.CONTROLS_REPEAT_HELPURL = "https://en.wikipedia.org/wiki/For_loop";
-Blockly.Msg.CONTROLS_REPEAT_INPUT_DO = "do";
+Blockly.Msg.CONTROLS_REPEAT_INPUT_DO = "";
 Blockly.Msg.CONTROLS_REPEAT_TITLE = "repeat %1 times";
 Blockly.Msg.CONTROLS_REPEAT_TITLE_REPEAT = "repeat";
 Blockly.Msg.CONTROLS_REPEAT_TITLE_TIMES = "times";
@@ -152,14 +167,14 @@ Blockly.Msg.LOGIC_COMPARE_TOOLTIP_LT = "Return true if the first input is smalle
 Blockly.Msg.LOGIC_COMPARE_TOOLTIP_LTE = "Return true if the first input is smaller than or equal to the second input.";
 Blockly.Msg.LOGIC_COMPARE_TOOLTIP_NEQ = "Return true if both inputs are not equal to each other.";
 Blockly.Msg.LOGIC_NEGATE_HELPURL = "https://en.wikipedia.org/wiki/Negation";
-Blockly.Msg.LOGIC_NEGATE_TITLE = "not %1";
+Blockly.Msg.LOGIC_NEGATE_TITLE = "! ( %1 )";
 Blockly.Msg.LOGIC_NEGATE_TOOLTIP = "Returns true if the input is false.  Returns false if the input is true.";
 Blockly.Msg.LOGIC_NULL = "null";
 Blockly.Msg.LOGIC_NULL_HELPURL = "https://en.wikipedia.org/wiki/Nullable_type";
 Blockly.Msg.LOGIC_NULL_TOOLTIP = "Returns null.";
-Blockly.Msg.LOGIC_OPERATION_AND = "and";
+Blockly.Msg.LOGIC_OPERATION_AND = "&&";
 Blockly.Msg.LOGIC_OPERATION_HELPURL = "https://code.google.com/p/blockly/wiki/And_Or";
-Blockly.Msg.LOGIC_OPERATION_OR = "or";
+Blockly.Msg.LOGIC_OPERATION_OR = "||";
 Blockly.Msg.LOGIC_OPERATION_TOOLTIP_AND = "Return true if both inputs are true.";
 Blockly.Msg.LOGIC_OPERATION_TOOLTIP_OR = "Return true if at least one of the inputs is true.";
 Blockly.Msg.LOGIC_TERNARY_CONDITION = "test";

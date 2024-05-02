@@ -28,15 +28,15 @@
 
     <sep></sep>
 
-    <!-- <category name="%{BKY_CATLOGIC}" colour="%{BKY_LOGIC_HUE}">
+    <category name="%{BKY_CATLOGIC}" colour="%{BKY_LOGIC_HUE}">
         <block type="controls_if"></block>
+        <block type="controls_ifelse"></block>
         <block type="logic_compare"></block>
         <block type="logic_operation"></block>
         <block type="logic_negate"></block>
         <block type="logic_boolean"></block>
-        <block type="logic_null" disabled="true"></block>
-        <block type="logic_ternary"></block>
-    </category> -->
+        <block type="logic_null" disabled="false"></block>
+    </category>
     <!-- <category name="%{BKY_CATLOOPS}" colour="%{BKY_LOOPS_HUE}">
         <block type="controls_repeat_ext">
             <value name="TIMES">
