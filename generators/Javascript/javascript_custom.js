@@ -25,6 +25,13 @@ Blockly.JavaScript.variables_assignment = function (block) {
   const type_block_b = block.getInputTargetBlock('B')?.type || 'no_value';
   const memory = JSON.parse(localStorage.getItem('memory'));
 
+  const handleError = (msg, blockDispose = null)=>{
+    window.alert(`Error: ${msg}`);
+    if (blockDispose) block.getInputTargetBlock(blockDispose).dispose();
+    return '';
+  }
+
+  // Case 1: (arr[index] || b || 123 || 'a' ) = a
   if (type_block_b === 'variables_get') {
     const object_a = memory[a];
     const object_b = memory[b];
@@ -32,18 +39,15 @@ Blockly.JavaScript.variables_assignment = function (block) {
       const result = getArrayAndIndex(a);
       if (result === null) return '';
       const { arrayName, index } = result;
-      if (memory[arrayName]?.type !== object_b['type']) {
-        window.alert("Error: type variable is not match");
-        block.getInputTargetBlock('B').dispose();
-        return '';
+      if (memory[arrayName]?.type !== object_b['type'] || object_b?.value === "no_value") {
+        return handleError('Type mismatch or variable not assigned.','B');
       } else {
-        memory[arrayName].value[index] = object_b['value'];
+        const arr = memory[arrayName].value ;
+        arr[index] = (object_b?.value !== "pending") ? object_b.value : null;
       }
     } else {
       if (object_b['value'] === 'no_value' || object_b['type'] !== object_a['type']) {
-        window.alert("Error: Type mismatch or variable not assigned.");
-        block.getInputTargetBlock('B').dispose();
-        return '';
+        return handleError('Type mismatch or variable not assigned.','B');
       } else {
         object_a['value'] = object_b['value'];
       }
@@ -58,21 +62,17 @@ Blockly.JavaScript.variables_assignment = function (block) {
       const result = getArrayAndIndex(a);
       if (result === null) return '';
       const { arrayName, index } = result;
-      console.log({ arrayName, index });
+      // console.log({ arrayName, index });
 
       if (memory[arrayName]?.type === 'CHAR') {
-        window.alert("Error: type variable is not match");
-        block.getInputTargetBlock('B').dispose();
-        return '';
+        return handleError('Type variable is not match.', 'B');
       }
       memory[arrayName].value[index] = b;
     }
     if (type_block_a === 'variables_get') {
       if (memory[a]?.type === 'INT') memory[a]['value'] = b;
       else {
-        window.alert("Error: Type mismatch or variable not assigned.");
-        block.getInputTargetBlock('B').dispose();
-        return '';
+        return handleError('Type mismatch or variable not assigned.', 'B');
       }
     }
   }
@@ -85,21 +85,17 @@ Blockly.JavaScript.variables_assignment = function (block) {
       const result = getArrayAndIndex(a);
       if (result === null) return '';
       const { arrayName, index } = result;
-      console.log({ arrayName, index });
+      // console.log({ arrayName, index });
 
       if (memory[arrayName]?.type === 'INT') {
-        window.alert("Error: type variable is not match");
-        block.getInputTargetBlock('B').dispose();
-        return '';
+        return handleError('Type variable is not match', 'B');
       }
       memory[arrayName].value[index] = b;
     }
     if (type_block_a === 'variables_get') {
       if (memory[a]?.type === 'CHAR') memory[a]['value'] = b;
       else {
-        window.alert("Error: Type mismatch or variable not assigned.");
-        block.getInputTargetBlock('B').dispose();
-        return '';
+        return handleError('Type mismatch or variable not assigned.', 'B');
       }
     }
   }
@@ -107,45 +103,35 @@ Blockly.JavaScript.variables_assignment = function (block) {
   if (type_block_b === 'math_arithmetic') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_arithmetic';
     else {
-      window.alert("Error: Type mismatch.");
-      block.getInputTargetBlock('B').dispose();
-      return '';
+      return handleError('Type mismatch or variable not assigned.', 'B');
     }
   }
 
   if (type_block_b === 'math_modulo') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_modulo';
     else {
-      window.alert("Error: Type mismatch.");
-      block.getInputTargetBlock('B').dispose();
-      return '';
+      return handleError('Type mismatch or variable not assigned.', 'B');
     }
   }
 
   if (type_block_b === 'math_round') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_round';
     else {
-      window.alert("Error: Type mismatch.");
-      block.getInputTargetBlock('B').dispose();
-      return '';
+      return handleError('Type mismatch or variable not assigned.', 'B');
     }
   }
 
   if (type_block_b === 'operator_bitwise') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_operator_bitwise';
     else {
-      window.alert("Error: Type mismatch.");
-      block.getInputTargetBlock('B').dispose();
-      return '';
+      return handleError('Type mismatch or variable not assigned.', 'B');
     }
   }
 
   if (type_block_b === 'math_pow') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_pow';
     else {
-      window.alert("Error: Type mismatch.");
-      block.getInputTargetBlock('B').dispose();
-      return '';
+      return handleError('Type mismatch or variable not assigned.', 'B');
     }
   }
 
@@ -156,9 +142,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     if (memory[a]?.type === 'INT' || memory[a]?.type === 'CHAR')
       memory[a]['value'] = b;
     else {
-      window.alert("Error: Type mismatch.");
-      block.getInputTargetBlock('B').dispose();
-      return '';
+      return handleError('Type mismatch or variable not assigned.', 'B');
     }
   } else if (
     (type_block_a === undefined &&
@@ -173,9 +157,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     (type_block_a === 'variables_array_get_name' &&
       type_block_b !== 'lists_create_empty_v2')
   ) {
-    window.alert("Error: Type mismatch.");
-    block.getInputTargetBlock('B').dispose();
-    return '';
+    return handleError('Type mismatch or variable not assigned.', 'B');
   }
 
   localStorage.setItem('memory', JSON.stringify(memory));
