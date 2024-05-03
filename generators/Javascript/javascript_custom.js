@@ -267,15 +267,19 @@ Blockly.JavaScript['math_pow'] = function (block) {
 };
 
 Blockly.JavaScript['variables_array_declare'] = function (block) {
-  // const dropdown_type = block.getFieldValue('TYPE');
-  // const text_index = block.getFieldValue('INDEX');
   const text_var = block.getFieldValue('VAR');
   const type = block.getFieldValue("TYPE");
+  const lengthArr = Blockly.JavaScript.valueToCode(block, 'LENGTH', Blockly.JavaScript.ORDER_ATOMIC) || 0;
 
+  const arrInit = [];
+  for(let i =0;i<lengthArr;i++){
+    arrInit.push(null);
+  }
+  
   let memory = JSON.parse(localStorage.getItem('memory'));
   memory[text_var] = {
     type,
-    value: []
+    value: arrInit
   }
   localStorage.setItem('memory', JSON.stringify(memory));
   const code = 'var' + ' ' + text_var + ';\n';
