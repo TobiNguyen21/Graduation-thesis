@@ -14,16 +14,17 @@ Blockly.JavaScript.variables_declare = function (block) {
   return '';
 };
 
-function getArrayAndIndex(str) {
-  const matches = str.match(/([a-zA-Z_]\w*)\[(\d+)\]/);
-  return matches && matches.length === 3 ? { arrayName: matches[1], index: parseInt(matches[2]) } : null;
-}
 Blockly.JavaScript.variables_assignment = function (block) {
   const a = Blockly.JavaScript.valueToCode(block, 'A', Blockly.JavaScript.ORDER_ATOMIC);
   const b = Blockly.JavaScript.valueToCode(block, 'B', Blockly.JavaScript.ORDER_ATOMIC);
   const type_block_a = block.getInputTargetBlock('A')?.type || undefined;
   const type_block_b = block.getInputTargetBlock('B')?.type || 'no_value';
   const memory = JSON.parse(localStorage.getItem('memory'));
+
+  const getArrayAndIndex = (str) =>{
+    const matches = str.match(/([a-zA-Z_]\w*)\[(\d+)\]/);
+    return matches && matches.length === 3 ? { arrayName: matches[1], index: parseInt(matches[2]) } : null;
+  }
 
   const handleError = (msg, blockDispose = null)=>{
     window.alert(`Error: ${msg}`);
@@ -54,6 +55,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
+  // Case 2: (a || arr[index]) = 123
   if (
     (type_block_a === 'variables_get' || type_block_a === 'lists_getValueAtIndex') &&
     type_block_b === 'math_number'
@@ -64,8 +66,8 @@ Blockly.JavaScript.variables_assignment = function (block) {
       const { arrayName, index } = result;
       // console.log({ arrayName, index });
 
-      if (memory[arrayName]?.type === 'CHAR') {
-        return handleError('Type variable is not match.', 'B');
+      if (memory[arrayName]?.type !== 'INT') {
+        return handleError('Type array is not match.', 'B');
       }
       memory[arrayName].value[index] = b;
     }
@@ -77,6 +79,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
+  // Case 3: (a || arr[index]) = 'a'
   if (
     (type_block_a === 'variables_get' || type_block_a === 'lists_getValueAtIndex') &&
     type_block_b === 'single_character_input'
@@ -87,8 +90,8 @@ Blockly.JavaScript.variables_assignment = function (block) {
       const { arrayName, index } = result;
       // console.log({ arrayName, index });
 
-      if (memory[arrayName]?.type === 'INT') {
-        return handleError('Type variable is not match', 'B');
+      if (memory[arrayName]?.type !== 'CHAR') {
+        return handleError('Type array is not match', 'B');
       }
       memory[arrayName].value[index] = b;
     }
@@ -100,6 +103,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
+  // Case 4: ... = 123
   if (type_block_b === 'math_arithmetic') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_arithmetic';
     else {
@@ -107,6 +111,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
+  // Case 5: ... = expression
   if (type_block_b === 'math_modulo') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_modulo';
     else {
@@ -114,6 +119,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
+  // Case 6: ... = roundNumber
   if (type_block_b === 'math_round') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_round';
     else {
@@ -121,6 +127,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
+  // Case 7: ... = bitwise expression ( &|^!)
   if (type_block_b === 'operator_bitwise') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_operator_bitwise';
     else {
@@ -128,6 +135,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
+  // Case 8: ... = a^B
   if (type_block_b === 'math_pow') {
     if (memory[a]?.type === 'INT') memory[a]['value'] = 'value_of_math_pow';
     else {
@@ -135,6 +143,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
+  // Case 9: arr[index] = [] - cover case with type int or char
   if (
     type_block_a === 'variables_array_get_name' &&
     type_block_b === 'lists_create_empty_v2'
