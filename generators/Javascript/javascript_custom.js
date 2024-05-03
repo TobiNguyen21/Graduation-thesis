@@ -1,3 +1,9 @@
+Blockly.JavaScript.errorHandler = function (block, msg, blockDispose = null) {
+  window.alert(`Error: ${msg}`);
+  if (blockDispose) block.getInputTargetBlock(blockDispose).dispose();
+  return '';
+}
+
 // Generator for declaring variables
 Blockly.JavaScript.variables_declare = function (block) {
   const variable = Blockly.JavaScript.variableDB_.getName(block.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME);
@@ -21,15 +27,13 @@ Blockly.JavaScript.variables_assignment = function (block) {
   const type_block_b = block.getInputTargetBlock('B')?.type || 'no_value';
   const memory = JSON.parse(localStorage.getItem('memory'));
 
-  const getArrayAndIndex = (str) =>{
+  const getArrayAndIndex = (str) => {
     const matches = str.match(/([a-zA-Z_]\w*)\[(\d+)\]/);
     return matches && matches.length === 3 ? { arrayName: matches[1], index: parseInt(matches[2]) } : null;
   }
 
-  const handleError = (msg, blockDispose = null)=>{
-    window.alert(`Error: ${msg}`);
-    if (blockDispose) block.getInputTargetBlock(blockDispose).dispose();
-    return '';
+  const handleError = (msg, blockDispose = null) => {
+    return Blockly.JavaScript.errorHandler(block, msg, blockDispose);
   }
 
   // Case 1: (arr[index] || b || 123 || 'a' ) = a
@@ -41,14 +45,14 @@ Blockly.JavaScript.variables_assignment = function (block) {
       if (result === null) return '';
       const { arrayName, index } = result;
       if (memory[arrayName]?.type !== object_b['type'] || object_b?.value === "no_value") {
-        return handleError('Type mismatch or variable not assigned.','B');
+        return handleError('Type mismatch or variable not assigned.', 'B');
       } else {
-        const arr = memory[arrayName].value ;
+        const arr = memory[arrayName].value;
         arr[index] = (object_b?.value !== "pending") ? object_b.value : null;
       }
     } else {
       if (object_b['value'] === 'no_value' || object_b['type'] !== object_a['type']) {
-        return handleError('Type mismatch or variable not assigned.','B');
+        return handleError('Type mismatch or variable not assigned.', 'B');
       } else {
         object_a['value'] = object_b['value'];
       }
@@ -211,8 +215,7 @@ Blockly.JavaScript['text_print'] = function (block) {
     if (connectedBlock.type === 'lists_getValueAtIndex') {
       const arrayName = connectedBlock.getFieldValue("ARRAY");
       const index = connectedBlock.getFieldValue("INDEX");
-      console.log(arrayName, index);
-      const arr = memory[arrayName]?.value ? JSON.parse(memory[arrayName]?.value) : null;
+      const arr = memory[arrayName]?.value ? (memory[arrayName].value) : null;
       if (arrayName !== '--select--' && !arr[index]) {
         window.alert("Variable not assigned");
         connectedBlock.dispose();
@@ -269,13 +272,21 @@ Blockly.JavaScript['math_pow'] = function (block) {
 Blockly.JavaScript['variables_array_declare'] = function (block) {
   const text_var = block.getFieldValue('VAR');
   const type = block.getFieldValue("TYPE");
-  const lengthArr = Blockly.JavaScript.valueToCode(block, 'LENGTH', Blockly.JavaScript.ORDER_ATOMIC) || 0;
+  const lengthArr = +Blockly.JavaScript.valueToCode(block, 'LENGTH', Blockly.JavaScript.ORDER_ATOMIC) || 0;
 
   const arrInit = [];
-  for(let i =0;i<lengthArr;i++){
-    arrInit.push(null);
+
+  if (type === "INT") {
+    for (let i = 0; i < lengthArr; i++) {
+      arrInit.push(0);
+    }
+  } else if (type === "CHAR") {
+    for (let i = 0; i < lengthArr; i++) {
+      arrInit.push(null);
+    }
   }
-  
+
+
   let memory = JSON.parse(localStorage.getItem('memory'));
   memory[text_var] = {
     type,
@@ -290,6 +301,76 @@ Blockly.JavaScript['variables_array_get_name'] = function (block) {
   const arrayName = block.getFieldValue('ARRAY');
   const code = arrayName;
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['variables_array_initial'] = function (block) {
+  const varName = block.getFieldValue('VAR');
+  const type = block.getFieldValue('TYPE');
+  let length = +Blockly.JavaScript.valueToCode(block, 'LENGTH', Blockly.JavaScript.ORDER_ATOMIC) || undefined;
+  const elementCode = Blockly.JavaScript.valueToCode(block, 'ELEMENT', Blockly.JavaScript.ORDER_NONE) || 'null';
+
+  let element = elementCode.replace(/'/g, '"');
+  if(type === "INT") element = element.replace(/null/g,'0');
+  const arrInit = JSON.parse(element) || [];
+
+  const handleError = (msg, blockDispose = null) => {
+    return Blockly.JavaScript.errorHandler(block, msg, blockDispose)
+  }
+
+  if(length === undefined && arrInit.length > 0 ){
+    length = arrInit.length;
+  }
+
+  const checkConflictTypeElementOfArray = (arr = []) => {
+    for (let i = 1; i < arr.length; i++) {
+      if (
+        arr[i] && ((typeof arr[0]) !== (typeof arr[i]))
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (!Array.isArray(arrInit)) {
+    return handleError("block connect must be array.", 'ELEMENT');
+  }
+
+  if (checkConflictTypeElementOfArray(arrInit)) {
+    return handleError("Conflict type on array.", 'ELEMENT');
+  }
+
+  if (
+    (arrInit.length > 0 && typeof arrInit[0] === "string" && type === "INT") ||
+    (arrInit.length > 0 && typeof arrInit[0] === "number" && type === "CHAR")
+  ) {
+    return handleError("Type variable is not match.", 'ELEMENT');
+  }
+
+  if (Number.isInteger(length) && arrInit.length > length) {
+    return handleError("Elements overload size allocated for array.", 'ELEMENT');
+  }
+
+  if (Number.isInteger(length) && arrInit.length < length) {
+    console.log({length,lenarr:arrInit.length});
+    const length_ = length - arrInit.length;
+    for (let i = 0; i < length_; i++) {
+      if (type === "INT") arrInit.push(0);
+      if (type === "CHAR") arrInit.push(null);
+    }
+  }
+
+  let memory = JSON.parse(localStorage.getItem('memory'));
+  memory[varName] = {
+    type,
+    value: arrInit
+  }
+  localStorage.setItem('memory', JSON.stringify(memory));
+
+  let code = 'var ' + varName + ' = ';
+  code += elementCode + ';\n';
+
+  return code;
 };
 
 Blockly.JavaScript['lists_create_empty_v2'] = function (block) {

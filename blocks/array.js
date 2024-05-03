@@ -10,7 +10,7 @@ Blockly.Blocks['lists_create_empty_v2'] = {
         this.appendDummyInput()
             .appendField("{");
         this.appendValueInput("ITEM0")
-            .setCheck("Number")
+            .setCheck(["Number", "Character"])
             .setAlign(Blockly.ALIGN_RIGHT);
         this.setOutput(true, "Array");
         this.setStyle("list_blocks");
@@ -79,7 +79,7 @@ Blockly.Blocks['lists_create_empty_v2'] = {
         for (var i = 0; i < this.itemCount_; i++) {
             if (!this.getInput('ITEM' + i)) {
                 this.appendValueInput('ITEM' + i)
-                    .setCheck('Number')
+                    .setCheck(["Number", "Character"])
                     .setAlign(Blockly.ALIGN_RIGHT)
                     .appendField(" ");
             }
@@ -133,7 +133,7 @@ Blockly.Blocks['lists_getValueAtIndex'] = {
     },
     getArrayOptions: function () {
         const workspace = Blockly.getMainWorkspace();
-        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare');
+        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare' || block.type === 'variables_array_initial');
         const options = arrayBlocks.map(block => [block.getFieldValue('VAR'), block.getFieldValue('VAR')]);
         return [["--Select array name--", "--select--"], ...options];
     }

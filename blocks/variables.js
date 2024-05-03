@@ -198,7 +198,7 @@ Blockly.Blocks['variables_assignment'] = {
         if (LOG_NAME_BLOCK) console.log(`${rootVariables} var_assignment`);
         this.setColour(COLOUR_VAR_BLOCK);
         this.appendValueInput('A')
-            .setCheck(["Variable", "variables_array_get_name"])
+            .setCheck(["Variable", "variables_array_get_name", "variables_array_declare_2"])
             .appendField('');
         this.appendValueInput('B')
             .setCheck(null)
@@ -214,10 +214,9 @@ Blockly.Blocks['variables_assignment'] = {
 Blockly.Blocks['variables_array_declare'] = {
     init: function () {
         this.setColour(150);
-        this.getNextArrayName();
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown([["int", "INT"], ["char", "CHAR"]]), "TYPE")
-            .appendField(new Blockly.FieldTextInput(this.arrayName), "VAR")
+            .appendField(new Blockly.FieldTextInput(this.getNextArrayName()), "VAR")
             .appendField("[");
         this.appendValueInput('LENGTH').setCheck('Number');
         this.appendDummyInput().appendField("]");
@@ -230,8 +229,32 @@ Blockly.Blocks['variables_array_declare'] = {
     },
     getNextArrayName: function () {
         const workspace = Blockly.getMainWorkspace();
-        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare');
-        this.arrayName = 'arr_' + arrayBlocks.length;
+        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare' || block.type === 'variables_array_initial');
+        return 'arr_' + arrayBlocks.length;
+    }
+};
+
+Blockly.Blocks['variables_array_initial'] = {
+    init: function () {
+        this.setColour(150);
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([["int", "INT"], ["char", "CHAR"]]), "TYPE")
+            .appendField(new Blockly.FieldTextInput(this.getNextArrayName()), "VAR")
+            .appendField("[");
+        this.appendValueInput('LENGTH').setCheck('Number');
+        this.appendDummyInput().appendField("]").appendField("=");
+        this.appendValueInput('ELEMENT');
+        this.appendDummyInput().appendField(";");
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    },
+    getNextArrayName: function () {
+        const workspace = Blockly.getMainWorkspace();
+        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare' || block.type === 'variables_array_initial');
+        return 'arr_' + arrayBlocks.length;
     }
 };
 
@@ -246,7 +269,7 @@ Blockly.Blocks['variables_array_get_name'] = {
     },
     getArrayOptions: function () {
         const workspace = Blockly.getMainWorkspace();
-        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare');
+        const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare' || block.type === 'variables_array_initial');
         const options = arrayBlocks.map(block => [block.getFieldValue('VAR'), block.getFieldValue('VAR')]);
         return [["--Select array name--", "--select--"], ...options];
     }
