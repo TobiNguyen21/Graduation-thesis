@@ -310,14 +310,14 @@ Blockly.JavaScript['variables_array_initial'] = function (block) {
   const elementCode = Blockly.JavaScript.valueToCode(block, 'ELEMENT', Blockly.JavaScript.ORDER_NONE) || 'null';
 
   let element = elementCode.replace(/'/g, '"');
-  if(type === "INT") element = element.replace(/null/g,'0');
+  if (type === "INT") element = element.replace(/null/g, '0');
   const arrInit = JSON.parse(element) || [];
 
   const handleError = (msg, blockDispose = null) => {
     return Blockly.JavaScript.errorHandler(block, msg, blockDispose)
   }
 
-  if(length === undefined && arrInit.length > 0 ){
+  if (length === undefined && arrInit.length > 0) {
     length = arrInit.length;
   }
 
@@ -352,7 +352,6 @@ Blockly.JavaScript['variables_array_initial'] = function (block) {
   }
 
   if (Number.isInteger(length) && arrInit.length < length) {
-    console.log({length,lenarr:arrInit.length});
     const length_ = length - arrInit.length;
     for (let i = 0; i < length_; i++) {
       if (type === "INT") arrInit.push(0);

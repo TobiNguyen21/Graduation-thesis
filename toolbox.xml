@@ -283,7 +283,16 @@
     </category> -->
     <category name="%{BKY_CATLISTS}" colour="%{BKY_LISTS_HUE}">
         <block type="variables_array_declare"></block>
-        <block type="variables_array_initial"></block>
+        <block type="variables_array_initial">
+            <value name="LENGTH">
+                <block type="math_number">
+                       <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="ELEMENT">
+                <block type="lists_create_empty_v2"></block>
+            </value>
+        </block>
         <block type="variables_assignment"></block>
         <block type="lists_create_empty_v2"></block>
         <block type="variables_array_get_name"></block>

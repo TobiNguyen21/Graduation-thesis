@@ -231,6 +231,13 @@ Blockly.Blocks['variables_array_declare'] = {
         const workspace = Blockly.getMainWorkspace();
         const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare' || block.type === 'variables_array_initial');
         return 'arr_' + arrayBlocks.length;
+    },
+    onchange: function () {
+        const lengthInput = Blockly.JavaScript.valueToCode(this, 'LENGTH', Blockly.JavaScript.ORDER_ATOMIC);
+        if (lengthInput === '0') {
+            window.alert('Length cannot be 0.');
+            this.getInputTargetBlock('LENGTH').dispose();
+        }
     }
 };
 
@@ -255,6 +262,13 @@ Blockly.Blocks['variables_array_initial'] = {
         const workspace = Blockly.getMainWorkspace();
         const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare' || block.type === 'variables_array_initial');
         return 'arr_' + arrayBlocks.length;
+    },
+    onchange: function () {
+        const lengthInput = Blockly.JavaScript.valueToCode(this, 'LENGTH', Blockly.JavaScript.ORDER_ATOMIC);
+        if (lengthInput === '0') {
+            window.alert('Length cannot be 0.');
+            this.getInputTargetBlock('LENGTH').dispose();
+        }
     }
 };
 
