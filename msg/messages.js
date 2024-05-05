@@ -10,7 +10,7 @@ const MSG = {
   catLoops: "Loops",
   catMath: "Math",
   catText: "Text",
-  catLists: "Lists",
+  catLists: "Arrays",
   catColour: "Colour",
   catVariables: "Variables",
   catFunctions: "Functions",

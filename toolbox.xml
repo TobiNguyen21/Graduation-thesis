@@ -69,7 +69,7 @@
     </category> -->
     <category name="%{BKY_CATMATH}" colour="%{BKY_MATH_HUE}">
         <block type="math_number" gap="32">
-            <field name="NUM">123</field>
+            <field name="NUM">10</field>
         </block>
         <block type="math_arithmetic">
             <value name="A">
@@ -281,56 +281,21 @@
             </value>
         </block>
     </category> -->
-    <!-- <category name="%{BKY_CATLISTS}" colour="%{BKY_LISTS_HUE}">
-        <block type="lists_create_with">
-            <mutation items="0"></mutation>
-        </block>
-        <block type="lists_create_with"></block>
-        <block type="lists_repeat">
-            <value name="NUM">
-                <shadow type="math_number">
-                    <field name="NUM">5</field>
-                </shadow>
-            </value>
-        </block>
-        <block type="lists_length"></block>
-        <block type="lists_isEmpty"></block>
-        <block type="lists_indexOf">
-            <value name="VALUE">
-                <block type="variables_get">
-                    <field name="VAR">list</field>
+    <category name="%{BKY_CATLISTS}" colour="%{BKY_LISTS_HUE}">
+        <block type="variables_array_declare"></block>
+        <block type="variables_array_initial">
+            <value name="LENGTH">
+                <block type="math_number">
+                       <field name="NUM">1</field>
                 </block>
             </value>
-        </block>
-        <block type="lists_getIndex">
-            <value name="VALUE">
-                <block type="variables_get">
-                    <field name="VAR">list</field>
-                </block>
+            <value name="ELEMENT">
+                <block type="lists_create_empty_v2"></block>
             </value>
         </block>
-        <block type="lists_setIndex">
-            <value name="LIST">
-                <block type="variables_get">
-                    <field name="VAR">list</field>
-                </block>
-            </value>
-        </block>
-        <block type="lists_getSublist">
-            <value name="LIST">
-                <block type="variables_get">
-                    <field name="VAR">list</field>
-                </block>
-            </value>
-        </block>
-        <block type="lists_split">
-            <value name="DELIM">
-                <shadow type="text">
-                    <field name="TEXT">,</field>
-                </shadow>
-            </value>
-        </block>
-        <block type="lists_sort"></block>
-        <block type="lists_reverse"></block>
-    </category> -->
+        <block type="variables_assignment"></block>
+        <block type="lists_create_empty_v2"></block>
+        <block type="variables_array_get_name"></block>
+        <block type="lists_getValueAtIndex"></block>
+    </category>
 </xml>

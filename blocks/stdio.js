@@ -49,6 +49,15 @@ Blockly.Blocks.text_print = {
         if (memory[variableName]['type'] === 'CHAR')
           this.getField('TYPE').setValue('%c');
       }
+
+      if (connectedBlock.type === "lists_getValueAtIndex"){
+        const memory = JSON.parse(localStorage.getItem('memory'));
+        const arrayName = connectedBlock.getField("ARRAY").value_;
+        if (memory[arrayName]?.type === 'INT')
+          this.getField('TYPE').setValue('%d');
+        if (memory[arrayName]?.type === 'CHAR')
+          this.getField('TYPE').setValue('%c');
+      }
     }
   }
 };
