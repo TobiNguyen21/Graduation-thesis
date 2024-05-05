@@ -48,7 +48,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
         return handleError('Type mismatch or variable not assigned.', 'B');
       } else {
         const arr = memory[arrayName].value;
-        arr[index] = (object_b?.value !== "pending") ? object_b.value : null;
+        arr[index] = (object_b?.value !== "pending") ? object_b.value : "pending";
       }
     } else {
       if (object_b['value'] === 'no_value' || object_b['type'] !== object_a['type']) {
