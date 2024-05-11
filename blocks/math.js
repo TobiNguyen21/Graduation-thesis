@@ -23,7 +23,7 @@ Blockly.defineBlocksWithJsonArray([{
     args0: [{
         type: "input_value",
         name: "A",
-        check: "Number"
+        check: ["Number","variables_get"]
     }, {
         type: "field_dropdown",
         name: "OP",
@@ -39,7 +39,7 @@ Blockly.defineBlocksWithJsonArray([{
     }, {
         type: "input_value",
         name: "B",
-        check: "Number"
+        check: ["Number","variables_get"]
     }],
     inputsInline: !0,
     output: "Number",
