@@ -15,6 +15,7 @@ Blockly.defineBlocksWithJsonArray([
             variable: "%{BKY_VARIABLES_DEFAULT_NAME}"
         }],
         output: "variables_get",
+        output: "variables_get",
         style: "variable_blocks",
         extensions: ["contextMenu_variableSetterGetter"]
     }, {
@@ -198,7 +199,7 @@ Blockly.Blocks['variables_assignment'] = {
         if (LOG_NAME_BLOCK) console.log(`${rootVariables} var_assignment`);
         this.setColour(COLOUR_VAR_BLOCK);
         this.appendValueInput('A')
-            .setCheck(["Variable", "variables_array_get_name", "variables_array_declare_2", "variables_get", "variables_array_get_name", "variables_array_declare_2"])
+            .setCheck(["Variable"])
             .appendField('');
         this.appendValueInput('B')
             .setCheck(null)
