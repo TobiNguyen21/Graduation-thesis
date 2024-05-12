@@ -391,6 +391,66 @@ Blockly.JavaScript['lists_getValueAtIndex'] = function (block) {
   return [arrayName + '[' + index + ']', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+Blockly.JavaScript['math_post_inc_decrement'] = function(block) {
+  const dropdown_newop = block.getFieldValue('NEWOP');
+  const value_var = Blockly.JavaScript.valueToCode(block, 'VAR', Blockly.JavaScript.ORDER_ATOMIC);
+  const code = value_var + dropdown_newop;
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['math_prev_inc_decrement'] = function(block) {
+  const dropdown_newop = block.getFieldValue('NEWOP');
+  const value_var = Blockly.JavaScript.valueToCode(block, 'VAR', Blockly.JavaScript.ORDER_ATOMIC);
+  const code = dropdown_newop + value_var;
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['repeat_condition'] = function(block) {
+  const operator = {
+    LT: "<",
+    LTE: "<=",
+    GT: ">",
+    GTE: ">="
+  }[block.getFieldValue("OP")];
+  const order = (operator === "==" || operator === "!=") ? Blockly.JavaScript.ORDER_EQUALITY : Blockly.JavaScript.ORDER_RELATIONAL;
+  const valueA = Blockly.JavaScript.valueToCode(block, "A", order) || "0";
+  const valueB = Blockly.JavaScript.valueToCode(block, "B", order) || "0";
+  return [valueA + " " + operator + " " + valueB, order];
+};
+
+Blockly.JavaScript['controls_for'] = function(block) {
+  const variableVar = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
+  const valueFrom = Blockly.JavaScript.valueToCode(block, 'FROM', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+  const valueCondition = Blockly.JavaScript.valueToCode(block, 'CONDITION', Blockly.JavaScript.ORDER_ASSIGNMENT) || `${variableVar} < 10`;
+  const valueBy = Blockly.JavaScript.valueToCode(block, 'BY', Blockly.JavaScript.ORDER_ASSIGNMENT) || `${variableVar} ++`;
+  const statementsDo = Blockly.JavaScript.statementToCode(block, 'DO');
+  
+  let memory = JSON.parse(localStorage.getItem('memory')) || {};
+  memory[variableVar] = {
+    type: 'INT',
+    value: valueFrom
+  };
+  localStorage.setItem('memory', JSON.stringify(memory));
+
+  const code = `for (var ${variableVar} = ${valueFrom}; ${valueCondition}; ${valueBy}) {\n${statementsDo}}\n`;
+  return code;
+};
+
+Blockly.JavaScript['math_prev_inc_decrement_exp'] = function(block) {
+  const dropdown_newop = block.getFieldValue('NEWOP');
+  const value_var = Blockly.JavaScript.valueToCode(block, 'VAR', Blockly.JavaScript.ORDER_ATOMIC);
+  const code = value_var + dropdown_newop + ';\n';
+  return code;
+};
+
+Blockly.JavaScript['math_post_inc_decrement_exp'] = function(block) {
+  const value_var = Blockly.JavaScript.valueToCode(block, 'VAR', Blockly.JavaScript.ORDER_ATOMIC);
+  const dropdown_newop = block.getFieldValue('NEWOP');
+  const code = value_var + dropdown_newop + ';\n';
+  return code;
+};
+
+
 // Generator for main block
 Blockly.JavaScript['main_block'] = function (block) {
   const stackCode = Blockly.JavaScript.statementToCode(block, 'STACK');

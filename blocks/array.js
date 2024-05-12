@@ -124,7 +124,7 @@ Blockly.Blocks['lists_getValueAtIndex'] = {
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown(this.getArrayOptions), "ARRAY")
             .appendField("[");
-        this.appendValueInput('INDEX').setCheck(['Number']);
+        this.appendValueInput('INDEX').setCheck(['Number', 'variables_get']);
         this.appendDummyInput().appendField("]");
         this.setOutput(true, null);
         this.setStyle('list_blocks');
