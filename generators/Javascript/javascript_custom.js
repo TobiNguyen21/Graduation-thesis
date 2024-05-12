@@ -214,9 +214,9 @@ Blockly.JavaScript['text_print'] = function (block) {
 
     if (connectedBlock.type === 'lists_getValueAtIndex') {
       const arrayName = connectedBlock.getFieldValue("ARRAY");
-      const index = connectedBlock.getFieldValue("INDEX");
+      const index = +(Blockly.JavaScript.valueToCode(connectedBlock, 'INDEX', Blockly.JavaScript.ORDER_NONE)) || 0;
       const arr = memory[arrayName]?.value ? (memory[arrayName].value) : null;
-      if (arrayName !== '--select--' && !arr[index]) {
+      if (arrayName !== '--select--' && arr[index] == undefined) {
         window.alert("Variable not assigned");
         connectedBlock.dispose();
       }
@@ -387,9 +387,7 @@ Blockly.JavaScript['lists_create_empty_v2'] = function (block) {
 
 Blockly.JavaScript['lists_getValueAtIndex'] = function (block) {
   const arrayName = block.getFieldValue('ARRAY');
-  const index = block.getFieldValue('INDEX');
-
-  // const index = Blockly.JavaScript.valueToCode(block, 'INDEX', Blockly.JavaScript.ORDER_NONE) || '0';
+  const index = Blockly.JavaScript.valueToCode(block, 'INDEX', Blockly.JavaScript.ORDER_NONE) || '0';
   return [arrayName + '[' + index + ']', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
