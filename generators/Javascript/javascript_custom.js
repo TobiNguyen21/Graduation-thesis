@@ -293,7 +293,7 @@ Blockly.JavaScript['variables_array_declare'] = function (block) {
     value: arrInit
   }
   localStorage.setItem('memory', JSON.stringify(memory));
-  const code = 'var' + ' ' + text_var + ';\n';
+  const code = 'var' + ' ' + text_var + ` = ${JSON.stringify(arrInit)}` + ';\n';
   return code;
 };
 

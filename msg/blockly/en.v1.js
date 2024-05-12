@@ -12,6 +12,9 @@ Blockly.Msg.PROCEDURES_HUE = '290';
 Blockly.Msg.OUTPUT_HUE = '180';
 Blockly.Msg.INPUT_HUE = '15';
 
+Blockly.Msg.SELECT_VALUE = '--select--';
+Blockly.Msg.PENDING_VALUE = 'pending';
+
 Blockly.Msg.MATH_SINGLE_TOOLTIP_LN = 'Return the natural logarithm of a number.';
 Blockly.Msg.MATH_SINGLE_TOOLTIP_POW10 = 'Return 10 to the power of a number.';
 

@@ -25,7 +25,7 @@ Blockly.Blocks.text_print = {
     const inputConnection = this.getInput('TEXT').connection;
 
     if (inputConnection.targetConnection) {
-      
+
       connectedBlock = inputConnection.targetConnection.sourceBlock_;
       // %d: math_number, single_character_input, text, variables_get
 
@@ -50,7 +50,7 @@ Blockly.Blocks.text_print = {
           this.getField('TYPE').setValue('%c');
       }
 
-      if (connectedBlock.type === "lists_getValueAtIndex"){
+      if (connectedBlock.type === "lists_getValueAtIndex") {
         const memory = JSON.parse(localStorage.getItem('memory'));
         const arrayName = connectedBlock.getField("ARRAY").value_;
         if (memory[arrayName]?.type === 'INT')
@@ -140,7 +140,6 @@ Blockly.Blocks.text_scanf = {
     const inputConnection = this.getInput('TEXT').connection;
 
     if (inputConnection.targetConnection) {
-      
       connectedBlock = inputConnection.targetConnection.sourceBlock_;
 
       if (connectedBlock.type === 'variables_get') {
@@ -152,9 +151,31 @@ Blockly.Blocks.text_scanf = {
         if (memory[variableName]['type'] === 'CHAR')
           this.getField('TYPE').setValue('%c');
 
-        memory[variableName]['value'] = 'pending';
+        memory[variableName]['value'] = Blockly.Msg.PENDING_VALUE;
         localStorage.setItem('memory', JSON.stringify(memory));
-      }else{
+      } else if (connectedBlock.type === 'lists_getValueAtIndex') {
+        const memory = JSON.parse(localStorage.getItem('memory'));
+        const arrayName = connectedBlock.getField("ARRAY").value_;
+        const index = +(Blockly.JavaScript.valueToCode(connectedBlock, 'INDEX', Blockly.JavaScript.ORDER_NONE)) || 0;
+  
+        if (arrayName !== Blockly.Msg.SELECT_VALUE) {
+          if (memory[arrayName]?.type === 'INT')
+            this.getField('TYPE').setValue('%d');
+          if (memory[arrayName]?.type === 'CHAR')
+            this.getField('TYPE').setValue('%c');
+
+          const arr = memory[arrayName]?.value ? (memory[arrayName].value) : null;
+          if (arr[index] == undefined) {
+            window.alert("Variable not assigned");
+            connectedBlock.dispose();
+            return '';
+          }
+          arr[index] = Blockly.Msg.PENDING_VALUE;
+          memory[arrayName].value = arr;
+          localStorage.setItem('memory', JSON.stringify(memory));
+        }
+      }
+      else {
         window.alert("input must be a variable.");
         connectedBlock.dispose();
       }
