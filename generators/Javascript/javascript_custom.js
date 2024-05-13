@@ -68,7 +68,6 @@ Blockly.JavaScript.variables_assignment = function (block) {
       const result = getArrayAndIndex(a);
       if (result === null) return '';
       const { arrayName, index } = result;
-      // console.log({ arrayName, index });
 
       if (memory[arrayName]?.type !== 'INT') {
         return handleError('Type array is not match.', 'B');
@@ -92,7 +91,6 @@ Blockly.JavaScript.variables_assignment = function (block) {
       const result = getArrayAndIndex(a);
       if (result === null) return '';
       const { arrayName, index } = result;
-      // console.log({ arrayName, index });
 
       if (memory[arrayName]?.type !== 'CHAR') {
         return handleError('Type array is not match', 'B');
@@ -184,7 +182,6 @@ Blockly.JavaScript['variables_get'] = function (block) {
   const code = Blockly.JavaScript['variables_get_original'](block);
   const memory = JSON.parse(localStorage.getItem('memory'));
   const variableName = block.getField("VAR").getVariable().name;
-  console.log({variableName});
 
   if (!memory[variableName]) {
     window.alert('Variable not found');
@@ -217,7 +214,7 @@ Blockly.JavaScript['text_print'] = function (block) {
       const arrayName = connectedBlock.getFieldValue("ARRAY");
       const index = +(Blockly.JavaScript.valueToCode(connectedBlock, 'INDEX', Blockly.JavaScript.ORDER_NONE)) || 0;
       const arr = memory[arrayName]?.value ? (memory[arrayName].value) : null;
-      if (arrayName !== '--select--' && arr[index] == undefined) {
+      if (arrayName !== '--select--' && arr[index] === undefined) {
         window.alert("Variable not assigned");
         connectedBlock.dispose();
       }

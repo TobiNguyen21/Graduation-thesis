@@ -165,8 +165,8 @@ Blockly.Blocks.text_scanf = {
             this.getField('TYPE').setValue('%c');
 
           const arr = memory[arrayName]?.value ? (memory[arrayName].value) : null;
-          if (arr[index] == undefined) {
-            window.alert("Variable not assigned");
+          if (arr[index] === undefined) {
+            window.alert("Variable not assigned 1");
             connectedBlock.dispose();
             return '';
           }
