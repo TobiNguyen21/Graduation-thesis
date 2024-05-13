@@ -395,23 +395,23 @@ Blockly.JavaScript.controls_whileUntil = function(a) {
     b && (c = "!" + c);
     return "while (" + c + ") {\n" + d + "}\n"
 };
-Blockly.JavaScript.controls_for = function(a) {
-    var b = Blockly.JavaScript.variableDB_.getName(a.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME),
-        c = Blockly.JavaScript.valueToCode(a, "FROM", Blockly.JavaScript.ORDER_ASSIGNMENT) || "0",
-        d = Blockly.JavaScript.valueToCode(a, "TO", Blockly.JavaScript.ORDER_ASSIGNMENT) || "0",
-        e = Blockly.JavaScript.valueToCode(a, "BY", Blockly.JavaScript.ORDER_ASSIGNMENT) || "1",
-        f = Blockly.JavaScript.statementToCode(a, "DO");
-    f = Blockly.JavaScript.addLoopTrap(f, a);
-    if (Blockly.isNumber(c) && Blockly.isNumber(d) &&
-        Blockly.isNumber(e)) {
-        var g = Number(c) <= Number(d);
-        a = "for (" + b + " = " + c + "; " + b + (g ? " <= " : " >= ") + d + "; " + b;
-        b = Math.abs(Number(e));
-        a = (1 == b ? a + (g ? "++" : "--") : a + ((g ? " += " : " -= ") + b)) + (") {\n" + f + "}\n")
-    } else a = "", g = c, c.match(/^\w+$/) || Blockly.isNumber(c) || (g = Blockly.JavaScript.variableDB_.getDistinctName(b + "_start", Blockly.VARIABLE_CATEGORY_NAME), a += "var " + g + " = " + c + ";\n"), c = d, d.match(/^\w+$/) || Blockly.isNumber(d) || (c = Blockly.JavaScript.variableDB_.getDistinctName(b + "_end", Blockly.VARIABLE_CATEGORY_NAME), a +=
-        "var " + c + " = " + d + ";\n"), d = Blockly.JavaScript.variableDB_.getDistinctName(b + "_inc", Blockly.VARIABLE_CATEGORY_NAME), a += "var " + d + " = ", a = Blockly.isNumber(e) ? a + (Math.abs(e) + ";\n") : a + ("Math.abs(" + e + ");\n"), a = a + ("if (" + g + " > " + c + ") {\n") + (Blockly.JavaScript.INDENT + d + " = -" + d + ";\n"), a += "}\n", a += "for (" + b + " = " + g + "; " + d + " >= 0 ? " + b + " <= " + c + " : " + b + " >= " + c + "; " + b + " += " + d + ") {\n" + f + "}\n";
-    return a
-};
+// Blockly.JavaScript.controls_for = function(a) {
+//     var b = Blockly.JavaScript.variableDB_.getName(a.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME),
+//         c = Blockly.JavaScript.valueToCode(a, "FROM", Blockly.JavaScript.ORDER_ASSIGNMENT) || "0",
+//         d = Blockly.JavaScript.valueToCode(a, "TO", Blockly.JavaScript.ORDER_ASSIGNMENT) || "0",
+//         e = Blockly.JavaScript.valueToCode(a, "BY", Blockly.JavaScript.ORDER_ASSIGNMENT) || "1",
+//         f = Blockly.JavaScript.statementToCode(a, "DO");
+//     f = Blockly.JavaScript.addLoopTrap(f, a);
+//     if (Blockly.isNumber(c) && Blockly.isNumber(d) &&
+//         Blockly.isNumber(e)) {
+//         var g = Number(c) <= Number(d);
+//         a = "for (" + b + " = " + c + "; " + b + (g ? " <= " : " >= ") + d + "; " + b;
+//         b = Math.abs(Number(e));
+//         a = (1 == b ? a + (g ? "++" : "--") : a + ((g ? " += " : " -= ") + b)) + (") {\n" + f + "}\n")
+//     } else a = "", g = c, c.match(/^\w+$/) || Blockly.isNumber(c) || (g = Blockly.JavaScript.variableDB_.getDistinctName(b + "_start", Blockly.VARIABLE_CATEGORY_NAME), a += "var " + g + " = " + c + ";\n"), c = d, d.match(/^\w+$/) || Blockly.isNumber(d) || (c = Blockly.JavaScript.variableDB_.getDistinctName(b + "_end", Blockly.VARIABLE_CATEGORY_NAME), a +=
+//         "var " + c + " = " + d + ";\n"), d = Blockly.JavaScript.variableDB_.getDistinctName(b + "_inc", Blockly.VARIABLE_CATEGORY_NAME), a += "var " + d + " = ", a = Blockly.isNumber(e) ? a + (Math.abs(e) + ";\n") : a + ("Math.abs(" + e + ");\n"), a = a + ("if (" + g + " > " + c + ") {\n") + (Blockly.JavaScript.INDENT + d + " = -" + d + ";\n"), a += "}\n", a += "for (" + b + " = " + g + "; " + d + " >= 0 ? " + b + " <= " + c + " : " + b + " >= " + c + "; " + b + " += " + d + ") {\n" + f + "}\n";
+//     return a
+// };
 Blockly.JavaScript.controls_forEach = function(a) {
     var b = Blockly.JavaScript.variableDB_.getName(a.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME),
         c = Blockly.JavaScript.valueToCode(a, "LIST", Blockly.JavaScript.ORDER_ASSIGNMENT) || "[]",

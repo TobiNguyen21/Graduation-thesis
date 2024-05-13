@@ -4,141 +4,129 @@ const COLOUR_LOOPS_BLOCK = 230;
 Blockly.Blocks.loops = {};
 Blockly.Constants.Loops = {};
 Blockly.Constants.Loops.HUE = 120;
-Blockly.defineBlocksWithJsonArray([{
-    type: "controls_repeat_ext",
-    message0: "%{BKY_CONTROLS_REPEAT_TITLE}",
-    args0: [{
-        type: "input_value",
-        name: "TIMES",
-        check: "Number"
-    }],
-    message1: "%{BKY_CONTROLS_REPEAT_INPUT_DO} %1",
-    args1: [{
-        type: "input_statement",
-        name: "DO"
-    }],
-    previousStatement: null,
-    nextStatement: null,
-    style: "loop_blocks",
-    tooltip: "%{BKY_CONTROLS_REPEAT_TOOLTIP}",
-    helpUrl: "%{BKY_CONTROLS_REPEAT_HELPURL}"
-}, {
-    type: "controls_repeat",
-    message0: "%{BKY_CONTROLS_REPEAT_TITLE}",
-    args0: [{
-        type: "field_number",
-        name: "TIMES",
-        value: 10,
-        min: 0,
-        precision: 1
-    }],
-    message1: "%{BKY_CONTROLS_REPEAT_INPUT_DO} %1",
-    args1: [{
-        type: "input_statement",
-        name: "DO"
-    }],
-    previousStatement: null,
-    nextStatement: null,
-    style: "loop_blocks",
-    tooltip: "%{BKY_CONTROLS_REPEAT_TOOLTIP}",
-    helpUrl: "%{BKY_CONTROLS_REPEAT_HELPURL}"
-}, {
-    type: "controls_whileUntil",
-    message0: "%1 %2",
-    args0: [{
-        type: "field_dropdown",
-        name: "MODE",
-        options: [
-            ["%{BKY_CONTROLS_WHILEUNTIL_OPERATOR_WHILE}", "WHILE"],
-            ["%{BKY_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL}", "UNTIL"]
-        ]
+Blockly.defineBlocksWithJsonArray([
+    {
+        type: "controls_whileUntil",
+        message0: "%1 ( %2 ) {",
+        args0: [{
+            type: "field_dropdown",
+            name: "MODE",
+            options: [
+                ["%{BKY_CONTROLS_WHILEUNTIL_OPERATOR_WHILE}", "WHILE"],
+                // ["%{BKY_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL}", "UNTIL"]
+            ]
+        }, {
+            type: "input_value",
+            name: "BOOL",
+            check: ["Boolean", "repeat_condition"]
+        }],
+        message1: "%{BKY_CONTROLS_REPEAT_INPUT_DO} %1",
+        args1: [{
+            type: "input_statement",
+            name: "DO"
+        }],
+        message2: "}",
+        previousStatement: null,
+        nextStatement: null,
+        style: "loop_blocks",
+        extensions: ["controls_whileUntil_tooltip"]
     }, {
-        type: "input_value",
-        name: "BOOL",
-        check: "Boolean"
-    }],
-    message1: "%{BKY_CONTROLS_REPEAT_INPUT_DO} %1",
-    args1: [{
-        type: "input_statement",
-        name: "DO"
-    }],
-    previousStatement: null,
-    nextStatement: null,
-    style: "loop_blocks",
-    helpUrl: "%{BKY_CONTROLS_WHILEUNTIL_HELPURL}",
-    extensions: ["controls_whileUntil_tooltip"]
-}, {
-    type: "controls_for",
-    message0: "%{BKY_CONTROLS_FOR_TITLE}",
-    args0: [{
-        type: "field_variable",
-        name: "VAR",
-        variable: null
-    }, {
-        type: "input_value",
-        name: "FROM",
-        check: "Number",
-        align: "RIGHT"
-    }, {
-        type: "input_value",
-        name: "TO",
-        check: "Number",
-        align: "RIGHT"
-    }, {
-        type: "input_value",
-        name: "BY",
-        check: "Number",
-        align: "RIGHT"
-    }],
-    message1: "%{BKY_CONTROLS_REPEAT_INPUT_DO} %1",
-    args1: [{
-        type: "input_statement",
-        name: "DO"
-    }],
-    inputsInline: !0,
-    previousStatement: null,
-    nextStatement: null,
-    style: "loop_blocks",
-    helpUrl: "%{BKY_CONTROLS_FOR_HELPURL}",
-    extensions: ["contextMenu_newGetVariableBlock", "controls_for_tooltip"]
-}, {
-    type: "controls_forEach",
-    message0: "%{BKY_CONTROLS_FOREACH_TITLE}",
-    args0: [{
-        type: "field_variable",
-        name: "VAR",
-        variable: null
-    }, {
-        type: "input_value",
-        name: "LIST",
-        check: "Array"
-    }],
-    message1: "%{BKY_CONTROLS_REPEAT_INPUT_DO} %1",
-    args1: [{
-        type: "input_statement",
-        name: "DO"
-    }],
-    previousStatement: null,
-    nextStatement: null,
-    style: "loop_blocks",
-    helpUrl: "%{BKY_CONTROLS_FOREACH_HELPURL}",
-    extensions: ["contextMenu_newGetVariableBlock", "controls_forEach_tooltip"]
-}, {
-    type: "controls_flow_statements",
-    message0: "%1",
-    args0: [{
-        type: "field_dropdown",
-        name: "FLOW",
-        options: [
-            ["%{BKY_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK}", "BREAK"],
-            ["%{BKY_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE}", "CONTINUE"]
-        ]
-    }],
-    previousStatement: null,
-    style: "loop_blocks",
-    helpUrl: "%{BKY_CONTROLS_FLOW_STATEMENTS_HELPURL}",
-    extensions: ["controls_flow_tooltip", "controls_flow_in_loop_check"]
-}]);
+        type: "controls_for",
+        message0: "%{BKY_CONTROLS_FOR_TITLE}",
+        args0: [{
+            type: "field_variable",
+            name: "VAR",
+            variable: null
+        }, {
+            type: "input_value",
+            name: "FROM",
+            check: "Number",
+            align: "RIGHT"
+        }, {
+            type: "input_value",
+            name: "CONDITION",
+            check: "repeat_condition",
+            align: "RIGHT"
+        }, {
+            type: "input_value",
+            name: "BY",
+            check: "Number",
+            align: "RIGHT"
+        }],
+        message1: "%{BKY_CONTROLS_REPEAT_INPUT_DO} %1",
+        args1: [{
+            type: "input_statement",
+            name: "DO"
+        }],
+        message2: "}",
+        inputsInline: !0,
+        previousStatement: null,
+        nextStatement: null,
+        style: "loop_blocks",
+        helpUrl: "%{BKY_CONTROLS_FOR_HELPURL}",
+        extensions: ["contextMenu_newGetVariableBlock", "controls_for_tooltip"]
+    },
+    {
+        type: "controls_flow_statements",
+        message0: "%1 ;",
+        args0: [{
+            type: "field_dropdown",
+            name: "FLOW",
+            options: [
+                ["%{BKY_CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK}", "BREAK"],
+                ["%{BKY_CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE}", "CONTINUE"]
+            ]
+        }],
+        previousStatement: null,
+        style: "loop_blocks",
+        helpUrl: "%{BKY_CONTROLS_FLOW_STATEMENTS_HELPURL}",
+        extensions: ["controls_flow_tooltip", "controls_flow_in_loop_check"]
+    },
+    {
+        type: "math_prev_inc_decrement_exp",
+        message0: "%1 %2 ;",
+        args0: [
+            {
+                type: "field_dropdown",
+                name: "NEWOP",
+                options: [
+                    ["%{BKY_MATH_INCREMENT_OP}", "++"],
+                    ["%{BKY_MATH_DECREMENT_OP}", "--"]
+                ]
+            },
+            {
+                type: "input_value",
+                name: "VAR",
+                check: ["variables_get"]
+            }
+        ],
+        previousStatement: true,
+        nextStatement: true,
+        style: "loop_blocks",
+    },
+    {
+        type: "math_post_inc_decrement_exp",
+        message0: "%1 %2 ;",
+        args0: [
+            {
+                type: "input_value",
+                name: "VAR",
+                check: ["variables_get"]
+            },
+            {
+                type: "field_dropdown",
+                name: "NEWOP",
+                options: [
+                    ["%{BKY_MATH_INCREMENT_OP}", "++"],
+                    ["%{BKY_MATH_DECREMENT_OP}", "--"]
+                ]
+            }
+        ],
+        previousStatement: true,
+        nextStatement: true,
+        style: "loop_blocks",
+    }
+]);
 Blockly.Constants.Loops.WHILE_UNTIL_TOOLTIPS = {
     WHILE: "%{BKY_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE}",
     UNTIL: "%{BKY_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL}"
@@ -196,3 +184,55 @@ Blockly.Constants.Loops.CONTROL_FLOW_IN_LOOP_CHECK_MIXIN = {
     }
 };
 Blockly.Extensions.registerMixin("controls_flow_in_loop_check", Blockly.Constants.Loops.CONTROL_FLOW_IN_LOOP_CHECK_MIXIN);
+
+Blockly.Blocks['repeat_condition'] = {
+    init: function () {
+        this.setStyle('logic_blocks');
+        this.appendValueInput('A')
+            .setCheck(['variables_get']);
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([
+                ['<', 'LT'],
+                ['<=', 'LTE'],
+                ['>', 'GT'],
+                ['>=', 'GTE']
+            ]), 'OP')
+            .setAlign(Blockly.ALIGN_RIGHT);
+        this.appendValueInput('B')
+            .setCheck(['Number', 'Boolean'])
+            .setAlign(Blockly.ALIGN_RIGHT);
+        this.setOutput(true, 'repeat_condition');
+        this.setInputsInline(true);
+        this.setTooltip('repeat condition');
+        this.setHelpUrl('');
+    }
+};
+
+Blockly.Blocks['math_post_inc_decrement'] = {
+    init: function () {
+        var a = [
+            [Blockly.Msg.MATH_INCREMENT_OP, "++"],
+            [Blockly.Msg.MATH_DECREMENT_OP, "--"]
+        ];
+        this.setColour(240);
+        this.setOutput(true, ["Number"]);
+        this.appendValueInput("VAR").setCheck("variables_get".split(" "));
+        this.appendDummyInput().appendField(new Blockly.FieldDropdown(a), "NEWOP");
+        this.setInputsInline(!0);
+        this.tag = Blockly.Msg.TAG_MATH_POST_INC_DECREMENT;
+        this.setTooltip(Blockly.Msg.MATH_POST_INC_DECREMENT_TOOLTIP)
+    }
+};
+
+Blockly.Blocks['math_prev_inc_decrement'] = {
+    init: function () {
+        var a = [
+            [Blockly.Msg.MATH_INCREMENT_OP, "++"],
+            [Blockly.Msg.MATH_DECREMENT_OP, "--"]
+        ];
+        this.setColour(240);
+        this.setOutput(true, ["Number"]);
+        this.appendValueInput("VAR").setCheck("variables_get".split(" ")).appendField(new Blockly.FieldDropdown(a), "NEWOP");
+        this.setInputsInline(!0);
+    }
+};

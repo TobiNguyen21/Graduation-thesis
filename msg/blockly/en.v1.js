@@ -12,8 +12,19 @@ Blockly.Msg.PROCEDURES_HUE = '290';
 Blockly.Msg.OUTPUT_HUE = '180';
 Blockly.Msg.INPUT_HUE = '15';
 
+Blockly.Msg.SELECT_VALUE = '--select--';
+Blockly.Msg.PENDING_VALUE = 'pending';
+
 Blockly.Msg.MATH_SINGLE_TOOLTIP_LN = 'Return the natural logarithm of a number.';
 Blockly.Msg.MATH_SINGLE_TOOLTIP_POW10 = 'Return 10 to the power of a number.';
+
+Blockly.Msg.CONTROLS_FOR_TITLE = ' for ( int %1 = %2 ; %3 ; %4 ) {';
+Blockly.Msg.CONTROLS_FOR_INPUT_DO = Blockly.Msg.CONTROLS_REPEAT_INPUT_DO;
+Blockly.Msg.CONTROLS_FOREACH_HELPURL = 'https://github.com/google/blockly/wiki/Loops#for-each';
+Blockly.Msg.CONTROLS_FOREACH_TITLE = 'for each item %1 in list %2';
+Blockly.Msg.CONTROLS_FOREACH_INPUT_DO = Blockly.Msg.CONTROLS_REPEAT_INPUT_DO;
+Blockly.Msg.CONTROLS_FOREACH_TOOLTIP = 'For each item in a list, set the variable "%1" to the item, and then do some statements.';
+
 
 Blockly.Msg.ADD_COMMENT = "Add Comment";
 Blockly.Msg.AUTH = "Please authorize this app to enable your work to be saved and to allow it to be shared by you.";
@@ -39,8 +50,8 @@ Blockly.Msg.COLOUR_RGB_RED = "red";
 Blockly.Msg.COLOUR_RGB_TITLE = "colour with";
 Blockly.Msg.COLOUR_RGB_TOOLTIP = "Create a colour with the specified amount of red, green, and blue.  All values must be between 0 and 100.";
 Blockly.Msg.CONTROLS_FLOW_STATEMENTS_HELPURL = "https://code.google.com/p/blockly/wiki/Loops#Loop_Termination_Blocks";
-Blockly.Msg.CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = "break out of loop";
-Blockly.Msg.CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = "continue with next iteration of loop";
+Blockly.Msg.CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = "break";
+Blockly.Msg.CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = "continue";
 Blockly.Msg.CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = "Break out of the containing loop.";
 Blockly.Msg.CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE = "Skip the rest of this loop, and continue with the next iteration.";
 Blockly.Msg.CONTROLS_FLOW_STATEMENTS_WARNING = "Warning: This block may only be used within a loop.";
@@ -72,8 +83,8 @@ Blockly.Msg.CONTROLS_REPEAT_TITLE_REPEAT = "repeat";
 Blockly.Msg.CONTROLS_REPEAT_TITLE_TIMES = "times";
 Blockly.Msg.CONTROLS_REPEAT_TOOLTIP = "Do some statements several times.";
 Blockly.Msg.CONTROLS_WHILEUNTIL_HELPURL = "https://code.google.com/p/blockly/wiki/Loops#repeat";
-Blockly.Msg.CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = "repeat until";
-Blockly.Msg.CONTROLS_WHILEUNTIL_OPERATOR_WHILE = "repeat while";
+Blockly.Msg.CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = " until";
+Blockly.Msg.CONTROLS_WHILEUNTIL_OPERATOR_WHILE = " while";
 Blockly.Msg.CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = "While a value is false, then do some statements.";
 Blockly.Msg.CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = "While a value is true, then do some statements.";
 Blockly.Msg.DELETE_BLOCK = "Delete Block";
