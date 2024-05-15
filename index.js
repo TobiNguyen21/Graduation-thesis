@@ -286,6 +286,7 @@ class Main {
       }
 
     });
+    this.demoWorkspace.toolbox_.flyout_.autoClose = false; // Turn-off autoClose sub-toolBox
   }
 }
 
