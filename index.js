@@ -119,30 +119,37 @@ class Main {
       // And then show generated code in an alert.
       // In a timeout to allow the outputArea.value to reset first.
       setTimeout(() => {
-        this.outputJsArea.value += this.isOutputChecked ?
+        this.outputJsArea.value += this.isOutputChecked ? 
           this.latestCode.replace(/highlightBlock\(.+\);/gi, '').replace(/\n\s*\n/g, '\n') :
           this.latestCode;
 
         // Begin execution
         this.highlightPause = false;
-        this.myInterpreter = new Interpreter(this.latestCode, this.initApi.bind(this));
-        this.runner = () => {
-          if (this.myInterpreter) {
-            let hasMore = this.myInterpreter.run();
-            if (hasMore) {
-              // Execution is currently blocked by some async call.
-              // Try again later.
-              setTimeout(this.runner, 10);
-            } else {
-              // Program is complete.
-              this.outputArea.value += '\n\n<< Program complete >>';
-              this.resetInterpreter();
-              this.resetStepUi(false);
-              // runButton.disabled = '';
+        try {
+          this.myInterpreter = new Interpreter(this.latestCode, this.initApi.bind(this));
+          this.runner = () => {
+            if (this.myInterpreter) {
+              let hasMore = this.myInterpreter.run();
+              if (hasMore) {
+                // Execution is currently blocked by some async call.
+                // Try again later.
+                setTimeout(this.runner, 10);
+              } else {
+                // Program is complete.
+                this.outputArea.value += '\n\n<< Program complete >>';
+                this.resetInterpreter();
+                this.resetStepUi(false);
+              }
             }
-          }
-        };
-        this.runner();
+          };
+          this.runner();
+        } catch (error) {
+          console.error(error); 
+          this.outputArea.value += `\n\n<< Error code>>`;
+          this.resetInterpreter();
+          // this.resetStepUi(false);
+          // return;
+        }
       }, 1);
       return;
     }
