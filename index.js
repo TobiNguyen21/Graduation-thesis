@@ -235,7 +235,7 @@ class Main {
     const toolboxText = await this.getToolbox();
     const toolboxXml = Blockly.Xml.textToDom(toolboxText);
     this.demoWorkspace = Blockly.inject('blocklyDiv', {
-      media: '/assets/',
+      media: './assets/',
       toolbox: toolboxXml,
       zoom:
       {
