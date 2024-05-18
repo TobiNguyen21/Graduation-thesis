@@ -209,6 +209,20 @@ Blockly.Blocks['variables_assignment'] = {
         this.setTooltip('');
         this.appendDummyInput().appendField(';');
     },
+    onchange: function(changeEvent) {
+        if (!this.workspace || changeEvent.type === Blockly.Events.MOVE) {
+            return; 
+        }
+        const blockA = this.getInputTargetBlock('A');
+        const blockB = this.getInputTargetBlock('B');
+        if (!this.isInFlyout && (!blockA || !blockB)) {
+            this.setWarningText('Both left and right must be filled.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
+    }
 };
 
 Blockly.Blocks['variables_array_declare'] = {
