@@ -106,6 +106,16 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         });
         return containerBlock;
     },
+    addToMemory: function (varName,varType) {
+        let memory = JSON.parse(localStorage.getItem('memory'));
+
+        memory[varName] = {
+          type: varType,
+          value: 'pending'
+        }
+        localStorage.setItem('memory', JSON.stringify(memory));
+      
+    },
     compose: function (containerBlock) {
         this.arguments_ = [];
         this.types_ = [];
@@ -116,6 +126,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
             var type = paramBlock.getFieldValue('TYPE');
             this.arguments_.push(name);
             this.types_.push(type);
+            this.addToMemory(name,type);
             var variable = this.workspace.getVariable(name, '');
             if (variable) {
                 this.argumentVarModels_.push(variable);
@@ -224,6 +235,7 @@ Blockly.Blocks['procedures_defreturn'] = {
     mutationToDom: Blockly.Blocks.procedures_defnoreturn.mutationToDom,
     domToMutation: Blockly.Blocks.procedures_defnoreturn.domToMutation,
     decompose: Blockly.Blocks.procedures_defnoreturn.decompose,
+    addToMemory: Blockly.Blocks.procedures_defnoreturn.addToMemory,
     compose: Blockly.Blocks.procedures_defnoreturn.compose,
     getProcedureDef: function () {
         return [this.getFieldValue("NAME"), this.arguments_, !0]
