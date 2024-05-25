@@ -119,7 +119,7 @@ class Main {
       // And then show generated code in an alert.
       // In a timeout to allow the outputArea.value to reset first.
       setTimeout(() => {
-        this.outputJsArea.value += this.isOutputChecked ? 
+        this.outputJsArea.value += this.isOutputChecked ?
           this.latestCode.replace(/highlightBlock\(.+\);/gi, '').replace(/\n\s*\n/g, '\n') :
           this.latestCode;
 
@@ -144,7 +144,7 @@ class Main {
           };
           this.runner();
         } catch (error) {
-          console.error(error); 
+          console.error(error);
           this.outputArea.value += `\n\n<< Error code>>`;
           this.resetInterpreter();
           // this.resetStepUi(false);
@@ -287,6 +287,20 @@ class Main {
 
     });
     this.demoWorkspace.toolbox_.flyout_.autoClose = false; // Turn-off autoClose sub-toolBox
+
+    // Add event listener to close toolbox when a block from Functions category is dragged out
+    this.demoWorkspace.addChangeListener(event => {
+      if (event.type === Blockly.Events.BLOCK_CREATE) {
+        const block = this.demoWorkspace.getBlockById(event.blockId);
+        if (block && block.workspace && block.workspace.toolbox_ && block.workspace.toolbox_.selectedItem_) {
+          const selectedCategory = block.workspace.toolbox_.selectedItem_.name_;
+          if (selectedCategory === MSG.catFunctions) {
+            block.workspace.toolbox_.selectedItem_.setSelected(false)
+            this.demoWorkspace.toolbox_.flyout_.hide();
+          }
+        }
+      }
+    });
   }
 }
 
