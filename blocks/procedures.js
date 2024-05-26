@@ -106,15 +106,17 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         });
         return containerBlock;
     },
-    addToMemory: function (varName,varType) {
-        let memory = JSON.parse(localStorage.getItem('memory'));
+    addToMemory: function (varName, varType) {
+        if (varName && varType) {
+            let memory = JSON.parse(localStorage.getItem('memory'));
 
-        memory[varName] = {
-          type: varType,
-          value: 'pending'
+            memory[varName] = {
+                type: varType,
+                value: 'pending'
+            }
+            localStorage.setItem('memory', JSON.stringify(memory));
+
         }
-        localStorage.setItem('memory', JSON.stringify(memory));
-      
     },
     compose: function (containerBlock) {
         this.arguments_ = [];
@@ -126,7 +128,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
             var type = paramBlock.getFieldValue('TYPE');
             this.arguments_.push(name);
             this.types_.push(type);
-            this.addToMemory(name,type);
+            this.addToMemory(name, type);
             var variable = this.workspace.getVariable(name, '');
             if (variable) {
                 this.argumentVarModels_.push(variable);
@@ -229,6 +231,15 @@ Blockly.Blocks['procedures_defreturn'] = {
         this.setStatements_(!0);
         this.statementConnection_ = null
         this.appendDummyInput().appendField("; }");
+    },
+    onchange: function (e) {
+        if ((this.workspace.isDragging && !this.workspace.isDragging() && e.type == Blockly.Events.BLOCK_DRAG)
+            || (this.workspace.isDragging && !this.workspace.isDragging() && e.type == Blockly.Events.CLICK)
+        ) {
+            const varName = this.getFieldValue("NAME");
+            const varType = this.getFieldValue("TYPE");
+            this.addToMemory(varName, varType)
+        }
     },
     setStatements_: Blockly.Blocks.procedures_defnoreturn.setStatements_,
     updateParams_: Blockly.Blocks.procedures_defnoreturn.updateParams_,
@@ -447,7 +458,7 @@ Blockly.Blocks.procedures_callnoreturn = {
 Blockly.Blocks['procedures_callreturn'] = {
     init: function () {
         this.appendDummyInput("TOPROW").appendField("", "NAME").appendField('( );', 'OPEN_CLOSE');
-        this.setOutput(!0);
+        this.setOutput(true, "value_return");
         this.setStyle("procedure_blocks");
         this.setColour(COLOUR_PROCEDURE_BLOCK);
         this.setHelpUrl(Blockly.Msg.PROCEDURES_CALLRETURN_HELPURL);
@@ -455,7 +466,7 @@ Blockly.Blocks['procedures_callreturn'] = {
         this.argumentVarModels_ = [];
         this.quarkConnections_ = {};
         this.quarkIds_ = null;
-        this.previousEnabledState_ = !0;
+        this.previousEnabledState_ = true;
     },
     getProcedureCall: Blockly.Blocks['procedures_callnoreturn'].getProcedureCall,
     renameProcedure: Blockly.Blocks['procedures_callnoreturn'].renameProcedure,
