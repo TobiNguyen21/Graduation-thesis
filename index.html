@@ -26,7 +26,8 @@
         <nav class="navbar navbar-default">
             <div class="collapse navbar-collapse">
                 <a class="navbar-brand" href="index.html" style="color: seagreen;"><b>Blockly for C</b></a>
-                <input id="program_name" class="navbar-brand program_name" type="text" value=">> index.c">
+                <div class="navbar-brand">FileName: </div>
+                <input id="program_name" class="navbar-brand program_name" type="text" value="index">
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group">
                         <button type="button" class="btn btn-default navbar-btn" id="cleanOutputButton">
@@ -35,14 +36,14 @@
                         <button type="button" class="btn btn-default navbar-btn" id="downloadCodeButton">
                             <span class="glyphicon glyphicon-download-alt"></span> Download code
                         </button>
-                        <button type="button" class="btn btn-default navbar-btn" id="loadButton">
-                            <span class="glyphicon glyphicon-refresh"></span> Load example
-                        </button>
                         <button type="button" class="btn btn-default navbar-btn" id="runButton">
                             <span class="glyphicon glyphicon-play"></span> Run code
                         </button>
                         <button type="button" class="btn btn-default navbar-btn" id="stepButton">
                             <span class="glyphicon glyphicon-share-alt"></span> Step by step
+                        </button>
+                        <button type="button" class="btn btn-default navbar-btn" id="loadButton">
+                            <span class="glyphicon glyphicon-refresh"></span> Load block
                         </button>
                         <button type="button" class="btn btn-default navbar-btn" id="saveButton">
                             <span class="glyphicon glyphicon-saved"></span> Save block
