@@ -84,7 +84,7 @@ class Main {
     this.downloadCodeButton = document.querySelector('#downloadCodeButton');
     this.saveButton = document.querySelector('#saveButton');
     this.cleanOutputButton = document.querySelector('#cleanOutputButton');
-    this.loadButton.addEventListener('click', this.loadExample.bind(this));
+    this.loadButton.addEventListener('click', this.loadBlock.bind(this));
     this.runButton.addEventListener('click', this.runCode.bind(this));
     this.stepButton.addEventListener('click', this.stepCode.bind(this));
     this.downloadCodeButton.addEventListener('click', this.downloadCodeHandler.bind(this));
@@ -94,15 +94,6 @@ class Main {
 
   static downloadCodeHandler(ev) {
     window.alert('download code');
-  }
-
-  static loadExample(ev) {
-    const contentsBeforeClearing = this.demoWorkspace.trashcan.contents_;
-    this.demoWorkspace.clear();
-    this.demoWorkspace.trashcan.contents_ = contentsBeforeClearing;
-    const xmlString = localStorage.getItem('xml');
-    const xml = Blockly.Xml.textToDom(xmlString);
-    Blockly.Xml.domToWorkspace(xml, this.demoWorkspace);
   }
 
   static getXmlExampleTemplate() {
@@ -119,7 +110,7 @@ class Main {
       // And then show generated code in an alert.
       // In a timeout to allow the outputArea.value to reset first.
       setTimeout(() => {
-        this.outputJsArea.value += this.isOutputChecked ? 
+        this.outputJsArea.value += this.isOutputChecked ?
           this.latestCode.replace(/highlightBlock\(.+\);/gi, '').replace(/\n\s*\n/g, '\n') :
           this.latestCode;
 
@@ -144,7 +135,7 @@ class Main {
           };
           this.runner();
         } catch (error) {
-          console.error(error); 
+          console.error(error);
           this.outputArea.value += `\n\n<< Error code>>`;
           this.resetInterpreter();
           // this.resetStepUi(false);
@@ -202,8 +193,49 @@ class Main {
   static saveBlock(ev) {
     const xmlBlock = Blockly.Xml.workspaceToDom(this.demoWorkspace);
     const xmlBlockString = Blockly.Xml.domToText(xmlBlock);
-    localStorage.setItem('xml', xmlBlockString);
-    window.alert("Block Saved!")
+
+    const blob = new Blob([xmlBlockString], { type: 'text/xml' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    const programName = document.getElementById('program_name').value;
+    a.download = `${programName}.xml`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+  }
+
+  static loadBlock(ev) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xml';
+
+    input.addEventListener('change', function () {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          try {
+            const xmlString = event.target.result;
+            const xml = Blockly.Xml.textToDom(xmlString);
+            this.demoWorkspace.clear();
+            Blockly.Xml.domToWorkspace(xml, this.demoWorkspace);
+
+            const fileName = file.name.replace(/\.[^.]+$/, "");
+            document.getElementById('program_name').value = fileName;
+          } catch (error) {
+            alert("Error loading block. Please try again.");
+            window.location.reload();
+          }
+        }.bind(this);
+        reader.readAsText(file);
+      }
+    }.bind(this));
+    input.click();
   }
 
   static getStringParamFromUrl(name, defaultValue) {
