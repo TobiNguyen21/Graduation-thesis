@@ -193,7 +193,7 @@ class Main {
   static saveBlock(ev) {
     const xmlBlock = Blockly.Xml.workspaceToDom(this.demoWorkspace);
     const xmlBlockString = Blockly.Xml.domToText(xmlBlock);
-    const memory = "MEMORY" + localStorage.getItem('memory');
+    const memory = localStorage.getItem('memory');
     const memoryString = "MEMORY" + memory;
 
     const blob = new Blob([xmlBlockString + memoryString], { type: 'text/plain' });
