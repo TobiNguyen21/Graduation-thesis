@@ -229,8 +229,6 @@ class Main {
               const xmlString = fileContent.substring(0, memoryIndex);
               const memoryString = fileContent.substring(memoryIndex + "MEMORY".length);
 
-              console.log(memoryString);
-
               // Save memory part to localStorage
               localStorage.setItem('memory', memoryString.trim());
 
