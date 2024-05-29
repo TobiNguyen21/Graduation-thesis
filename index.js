@@ -193,14 +193,16 @@ class Main {
   static saveBlock(ev) {
     const xmlBlock = Blockly.Xml.workspaceToDom(this.demoWorkspace);
     const xmlBlockString = Blockly.Xml.domToText(xmlBlock);
+    const memory = "MEMORY" + localStorage.getItem('memory');
+    const memoryString = "MEMORY" + memory;
 
-    const blob = new Blob([xmlBlockString], { type: 'text/xml' });
+    const blob = new Blob([xmlBlockString + memoryString], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement('a');
     a.href = url;
     const programName = document.getElementById('program_name').value;
-    a.download = `${programName}.xml`;
+    a.download = `${programName}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -211,7 +213,7 @@ class Main {
   static loadBlock(ev) {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.xml';
+    input.accept = '.txt';
 
     input.addEventListener('change', function () {
       if (input.files && input.files[0]) {
@@ -220,21 +222,37 @@ class Main {
 
         reader.onload = function (event) {
           try {
-            const xmlString = event.target.result;
-            const xml = Blockly.Xml.textToDom(xmlString);
-            this.demoWorkspace.clear();
-            Blockly.Xml.domToWorkspace(xml, this.demoWorkspace);
+            const fileContent = event.target.result;
+            const memoryIndex = fileContent.indexOf("MEMORY");
 
-            const fileName = file.name.replace(/\.[^.]+$/, "");
-            document.getElementById('program_name').value = fileName;
+            if (memoryIndex !== -1) {
+              const xmlString = fileContent.substring(0, memoryIndex);
+              const memoryString = fileContent.substring(memoryIndex + "MEMORY".length);
+
+              // Save memory part to localStorage
+              localStorage.setItem('memory', memoryString.trim());
+
+              // Load blocks into the workspaces
+              const xml = Blockly.Xml.textToDom(xmlString);
+              this.demoWorkspace.clear();
+              Blockly.Xml.domToWorkspace(xml, this.demoWorkspace);
+
+              // Set program name
+              const fileName = file.name.replace(/\.[^.]+$/, "");
+              document.getElementById('program_name').value = fileName;
+            } else {
+              alert("MEMORY marker not found in the file.");
+            }
           } catch (error) {
             alert("Error loading block. Please try again.");
             window.location.reload();
           }
         }.bind(this);
+
         reader.readAsText(file);
       }
     }.bind(this));
+
     input.click();
   }
 
