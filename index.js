@@ -84,7 +84,7 @@ class Main {
     this.downloadCodeButton = document.querySelector('#downloadCodeButton');
     this.saveButton = document.querySelector('#saveButton');
     this.cleanOutputButton = document.querySelector('#cleanOutputButton');
-    this.loadButton.addEventListener('click', this.loadExample.bind(this));
+    this.loadButton.addEventListener('click', this.loadBlock.bind(this));
     this.runButton.addEventListener('click', this.runCode.bind(this));
     this.stepButton.addEventListener('click', this.stepCode.bind(this));
     this.downloadCodeButton.addEventListener('click', this.downloadCodeHandler.bind(this));
@@ -94,15 +94,6 @@ class Main {
 
   static downloadCodeHandler(ev) {
     window.alert('download code');
-  }
-
-  static loadExample(ev) {
-    const contentsBeforeClearing = this.demoWorkspace.trashcan.contents_;
-    this.demoWorkspace.clear();
-    this.demoWorkspace.trashcan.contents_ = contentsBeforeClearing;
-    const xmlString = localStorage.getItem('xml');
-    const xml = Blockly.Xml.textToDom(xmlString);
-    Blockly.Xml.domToWorkspace(xml, this.demoWorkspace);
   }
 
   static getXmlExampleTemplate() {
@@ -125,24 +116,31 @@ class Main {
 
         // Begin execution
         this.highlightPause = false;
-        this.myInterpreter = new Interpreter(this.latestCode, this.initApi.bind(this));
-        this.runner = () => {
-          if (this.myInterpreter) {
-            let hasMore = this.myInterpreter.run();
-            if (hasMore) {
-              // Execution is currently blocked by some async call.
-              // Try again later.
-              setTimeout(this.runner, 10);
-            } else {
-              // Program is complete.
-              this.outputArea.value += '\n\n<< Program complete >>';
-              this.resetInterpreter();
-              this.resetStepUi(false);
-              // runButton.disabled = '';
+        try {
+          this.myInterpreter = new Interpreter(this.latestCode, this.initApi.bind(this));
+          this.runner = () => {
+            if (this.myInterpreter) {
+              let hasMore = this.myInterpreter.run();
+              if (hasMore) {
+                // Execution is currently blocked by some async call.
+                // Try again later.
+                setTimeout(this.runner, 10);
+              } else {
+                // Program is complete.
+                this.outputArea.value += '\n\n<< Program complete >>';
+                this.resetInterpreter();
+                this.resetStepUi(false);
+              }
             }
-          }
-        };
-        this.runner();
+          };
+          this.runner();
+        } catch (error) {
+          console.error(error);
+          this.outputArea.value += `\n\n<< Error code>>`;
+          this.resetInterpreter();
+          // this.resetStepUi(false);
+          // return;
+        }
       }, 1);
       return;
     }
@@ -195,8 +193,67 @@ class Main {
   static saveBlock(ev) {
     const xmlBlock = Blockly.Xml.workspaceToDom(this.demoWorkspace);
     const xmlBlockString = Blockly.Xml.domToText(xmlBlock);
-    localStorage.setItem('xml', xmlBlockString);
-    window.alert("Block Saved!")
+    const memory = "MEMORY" + localStorage.getItem('memory');
+    const memoryString = "MEMORY" + memory;
+
+    const blob = new Blob([xmlBlockString + memoryString], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    const programName = document.getElementById('program_name').value;
+    a.download = `${programName}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+  }
+
+  static loadBlock(ev) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.txt';
+
+    input.addEventListener('change', function () {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          try {
+            const fileContent = event.target.result;
+            const memoryIndex = fileContent.indexOf("MEMORY");
+
+            if (memoryIndex !== -1) {
+              const xmlString = fileContent.substring(0, memoryIndex);
+              const memoryString = fileContent.substring(memoryIndex + "MEMORY".length);
+
+              // Save memory part to localStorage
+              localStorage.setItem('memory', memoryString.trim());
+
+              // Load blocks into the workspaces
+              const xml = Blockly.Xml.textToDom(xmlString);
+              this.demoWorkspace.clear();
+              Blockly.Xml.domToWorkspace(xml, this.demoWorkspace);
+
+              // Set program name
+              const fileName = file.name.replace(/\.[^.]+$/, "");
+              document.getElementById('program_name').value = fileName;
+            } else {
+              alert("MEMORY marker not found in the file.");
+            }
+          } catch (error) {
+            alert("Error loading block. Please try again.");
+            window.location.reload();
+          }
+        }.bind(this);
+
+        reader.readAsText(file);
+      }
+    }.bind(this));
+
+    input.click();
   }
 
   static getStringParamFromUrl(name, defaultValue) {
@@ -235,7 +292,7 @@ class Main {
     const toolboxText = await this.getToolbox();
     const toolboxXml = Blockly.Xml.textToDom(toolboxText);
     this.demoWorkspace = Blockly.inject('blocklyDiv', {
-      media: '/assets/',
+      media: './assets/',
       toolbox: toolboxXml,
       zoom:
       {
@@ -278,6 +335,21 @@ class Main {
           code;
       }
 
+    });
+    this.demoWorkspace.toolbox_.flyout_.autoClose = false; // Turn-off autoClose sub-toolBox
+
+    // Add event listener to close toolbox when a block from Functions category is dragged out
+    this.demoWorkspace.addChangeListener(event => {
+      if (event.type === Blockly.Events.BLOCK_CREATE) {
+        const block = this.demoWorkspace.getBlockById(event.blockId);
+        if (block && block.workspace && block.workspace.toolbox_ && block.workspace.toolbox_.selectedItem_) {
+          const selectedCategory = block.workspace.toolbox_.selectedItem_.name_;
+          if (selectedCategory === MSG.catFunctions) {
+            block.workspace.toolbox_.selectedItem_.setSelected(false)
+            this.demoWorkspace.toolbox_.flyout_.hide();
+          }
+        }
+      }
     });
   }
 }
