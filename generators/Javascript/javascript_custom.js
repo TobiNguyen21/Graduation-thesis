@@ -171,6 +171,21 @@ Blockly.JavaScript.variables_assignment = function (block) {
     return handleError('Type mismatch or variable not assigned.', 'B');
   }
 
+  // Case 10: ... = function return value
+  if (type_block_b === 'procedures_callreturn') {
+    const funcName = block.getInputTargetBlock('B').getField("NAME").value_;
+    memory[a]['value'] = 'value_of_procedures_callreturn'
+    Blockly.getMainWorkspace().addChangeListener(e => {
+      if (e.type === Blockly.Events.CLICK) {
+        console.log(memory[a]);
+        if (memory[funcName]?.type !== memory[a]?.type) {
+          memory[a]['value'] = 'no_value'
+          handleError('Type mismatch or variable not assigned.', 'B');
+        }
+      }
+    })
+  }
+  
   localStorage.setItem('memory', JSON.stringify(memory));
 
   return a + ' = ' + b + ';\n';
@@ -447,7 +462,6 @@ Blockly.JavaScript['math_post_inc_decrement_exp'] = function (block) {
   const code = value_var + dropdown_newop + ';\n';
   return code;
 };
-
 
 // Generator for main block
 Blockly.JavaScript['main_block'] = function (block) {

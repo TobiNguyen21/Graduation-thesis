@@ -337,6 +337,20 @@ class Main {
 
     });
     this.demoWorkspace.toolbox_.flyout_.autoClose = false; // Turn-off autoClose sub-toolBox
+
+    // Add event listener to close toolbox when a block from Functions category is dragged out
+    this.demoWorkspace.addChangeListener(event => {
+      if (event.type === Blockly.Events.BLOCK_CREATE) {
+        const block = this.demoWorkspace.getBlockById(event.blockId);
+        if (block && block.workspace && block.workspace.toolbox_ && block.workspace.toolbox_.selectedItem_) {
+          const selectedCategory = block.workspace.toolbox_.selectedItem_.name_;
+          if (selectedCategory === MSG.catFunctions) {
+            block.workspace.toolbox_.selectedItem_.setSelected(false)
+            this.demoWorkspace.toolbox_.flyout_.hide();
+          }
+        }
+      }
+    });
   }
 }
 

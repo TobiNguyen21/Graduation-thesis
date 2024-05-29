@@ -24,8 +24,6 @@
         </block>
     </category>
 
-    <!-- <category name="%{BKY_CATFUNCTIONS}" colour="%{BKY_PROCEDURES_HUE}" custom="PROCEDURE"></category> -->
-
     <sep></sep>
 
     <category name="%{BKY_CATLOGIC}" colour="%{BKY_LOGIC_HUE}">
@@ -306,4 +304,6 @@
         <block type="variables_array_get_name"></block>
         <block type="lists_getValueAtIndex"></block>
     </category>
+     <category name="%{BKY_CATFUNCTIONS}" colour="%{BKY_PROCEDURES_HUE}" custom="PROCEDURE">
+     </category>
 </xml>
