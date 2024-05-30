@@ -191,6 +191,18 @@ Blockly.Blocks['variables_declare'] = {
         this.setTooltip("");
         this.setHelpUrl("");
     },
+    isValidVariableName: function (name) {
+        const variableNamePattern = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+        return variableNamePattern.test(name);
+    },
+    onchange: function (e) {
+        const varName = this.getFieldValue("VAR");
+
+        if(!this.isValidVariableName(varName)){
+            this.setWarningText('Invalid variable name !');
+            this.setEnabled(false);
+        }
+    }
 };
 
 Blockly.Blocks['variables_assignment'] = {
