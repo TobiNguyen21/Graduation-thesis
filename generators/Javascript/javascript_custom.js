@@ -27,6 +27,8 @@ Blockly.JavaScript.variables_assignment = function (block) {
   const type_block_b = block.getInputTargetBlock('B')?.type || 'no_value';
   const memory = JSON.parse(localStorage.getItem('memory'));
 
+  console.log(type_block_a,type_block_b);
+
   const getArrayAndIndex = (str) => {
     const matches = str.match(/([a-zA-Z_]\w*)\[(\d+)\]/);
     return matches && matches.length === 3 ? { arrayName: matches[1], index: parseInt(matches[2]) } : null;
@@ -42,7 +44,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     const object_b = memory[b];
     if (type_block_a === 'lists_getValueAtIndex') {
       const result = getArrayAndIndex(a);
-      if (result === null) return '';
+      if (result === null) return a + ' = ' + b + ';\n';
       const { arrayName, index } = result;
       if (memory[arrayName]?.type !== object_b['type'] || object_b?.value === "no_value") {
         return handleError('Type mismatch or variable not assigned.', 'B');
@@ -89,6 +91,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
   ) {
     if (type_block_a === 'lists_getValueAtIndex') {
       const result = getArrayAndIndex(a);
+      console.log("aa");
       if (result === null) return '';
       const { arrayName, index } = result;
 
@@ -161,6 +164,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     (type_block_a === 'variables_array_get_name' &&
       type_block_b === 'no_value')
   ) {
+    console.log("no");
     return '';
   } else if (
     (type_block_a !== 'variables_array_get_name' &&
