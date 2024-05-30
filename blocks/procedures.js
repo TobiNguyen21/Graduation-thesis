@@ -557,7 +557,7 @@ Blockly.Blocks.main_block = {
         this.arguments_ = [];
         this.types_ = [];
         this.appendDummyInput().appendField("}");
-
+        this.setDeletable(false);
     },
     getName: function () {
         return ["Main"];
