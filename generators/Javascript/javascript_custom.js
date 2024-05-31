@@ -91,7 +91,6 @@ Blockly.JavaScript.variables_assignment = function (block) {
   ) {
     if (type_block_a === 'lists_getValueAtIndex') {
       const result = getArrayAndIndex(a);
-      console.log("aa");
       if (result === null) return '';
       const { arrayName, index } = result;
 
@@ -164,7 +163,6 @@ Blockly.JavaScript.variables_assignment = function (block) {
     (type_block_a === 'variables_array_get_name' &&
       type_block_b === 'no_value')
   ) {
-    console.log("no");
     return '';
   } else if (
     (type_block_a !== 'variables_array_get_name' &&
