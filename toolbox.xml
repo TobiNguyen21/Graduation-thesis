@@ -9,6 +9,8 @@
             </value>
         </block>
         <block type="single_character_input"></block>
+        <block type="address"></block>
+        <block type="pointer"></block>
     </category>
     <category name="Input" colour="%{BKY_INPUT_HUE}">
         <!-- <block type="text_prompt_ext">
