@@ -40,7 +40,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         }
     },
     updateParams_: function () {
-        var params = this.arguments_.map((arg, index) => this.types_[index] + " " + arg);
+        var params = this.arguments_.map((arg, index) => this.types_[index].replace(/_POINTER/g, " *") + " " + arg);
         var paramString = params.length ? " " + params.join(", ") + " " : "";
         Blockly.Events.disable();
         try {
@@ -280,7 +280,7 @@ Blockly.Blocks.procedures_mutatorarg = {
             this.createdVariables_ = [];
             this.oldShowEditorFn_()
         };
-        this.appendDummyInput().appendField(new Blockly.FieldDropdown([["int", "INT"], ["char", "CHAR"]]), "TYPE").appendField(a, "NAME");
+        this.appendDummyInput().appendField(new Blockly.FieldDropdown([["int", "INT"], ["char", "CHAR"], ["int *", "INT_POINTER"], ["char *", "CHAR_POINTER"]]), "TYPE").appendField(a, "NAME");
         this.setPreviousStatement(!0);
         this.setNextStatement(!0);
         this.setStyle("procedure_blocks");
@@ -367,7 +367,6 @@ Blockly.Blocks.procedures_callnoreturn = {
         if (fieldOpenClose.value_) {
             fieldOpenClose.value_ = '(';
             fieldOpenClose.name = 'OPEN';
-            console.log(fieldOpenClose);
         }
         for (var a = 0; a < this.arguments_.length; a++) {
             let b = this.getField("ARGNAME" + a);
