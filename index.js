@@ -138,8 +138,6 @@ class Main {
           console.error(error);
           this.outputArea.value += `\n\n<< Error code>>`;
           this.resetInterpreter();
-          // this.resetStepUi(false);
-          // return;
         }
       }, 1);
       return;
@@ -181,12 +179,10 @@ class Main {
           setTimeout(() => {
             this.stepButton.disabled = '';
           }, 2000);
-
           return;
         }
       }
-      // Keep executing until a highlight statement is reached,
-      // or the code completes or errors.
+   
     } while (this.hasMoreCode && !this.highlightPause);
   }
 

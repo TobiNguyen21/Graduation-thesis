@@ -16,7 +16,6 @@ Blockly.JavaScript.variables_declare = function (block) {
     value: 'no_value'
   }
   localStorage.setItem('memory', JSON.stringify(memory));
-  // return "let " + variable + ";\n";
   return '';
 };
 
