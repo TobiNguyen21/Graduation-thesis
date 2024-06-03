@@ -210,7 +210,7 @@ Blockly.Blocks['variables_assignment'] = {
         if (LOG_NAME_BLOCK) console.log(`${rootVariables} var_assignment`);
         this.setColour(COLOUR_VAR_BLOCK);
         this.appendValueInput('A')
-            .setCheck(["Variable", "variables_array_get_name", "variables_array_declare_2", "variables_get"])
+            .setCheck(["Variable", "variables_array_get_name", "variables_array_declare_2", "variables_get", "pointer"])
             .appendField('');
         this.appendValueInput('B')
             .setCheck(null)
@@ -315,3 +315,26 @@ Blockly.Blocks['variables_array_get_name'] = {
     }
 };
 
+Blockly.Blocks['address'] = {
+    init: function() {
+        this.appendValueInput("VALUE")
+            .setCheck(["variables_get"])
+            .appendField("&");
+        this.setOutput(true, "Pointer");
+        this.setColour(230);
+        this.setTooltip("Address of operator");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['pointer'] = {
+    init: function() {
+        this.appendValueInput("VALUE")
+            .setCheck(["variables_get"])
+            .appendField("*");
+        this.setOutput(true, "pointer");
+        this.setColour(230);
+        this.setTooltip("Pointer operator");
+        this.setHelpUrl("");
+    }
+};

@@ -16,7 +16,6 @@ Blockly.JavaScript.variables_declare = function (block) {
     value: 'no_value'
   }
   localStorage.setItem('memory', JSON.stringify(memory));
-  // return "let " + variable + ";\n";
   return '';
 };
 
@@ -27,7 +26,6 @@ Blockly.JavaScript.variables_assignment = function (block) {
   const type_block_b = block.getInputTargetBlock('B')?.type || 'no_value';
   const memory = JSON.parse(localStorage.getItem('memory'));
 
-  console.log(type_block_a,type_block_b);
 
   const getArrayAndIndex = (str) => {
     const matches = str.match(/([a-zA-Z_]\w*)\[(\d+)\]/);
@@ -52,7 +50,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
         const arr = memory[arrayName].value;
         arr[index] = (object_b?.value !== "pending") ? object_b.value : "pending";
       }
-    } else {
+    } else if (type_block_a !== 'pointer') {
       if (object_b['value'] === 'no_value' || object_b['type'] !== object_a['type']) {
         return handleError('Type mismatch or variable not assigned.', 'B');
       } else {
@@ -179,15 +177,36 @@ Blockly.JavaScript.variables_assignment = function (block) {
     memory[a]['value'] = 'value_of_procedures_callreturn'
     Blockly.getMainWorkspace().addChangeListener(e => {
       if (e.type === Blockly.Events.CLICK) {
-        console.log(memory[a]);
         if (memory[funcName]?.type !== memory[a]?.type) {
           memory[a]['value'] = 'no_value'
           handleError('Type mismatch or variable not assigned.', 'B');
         }
       }
     })
+
+    const params = Blockly.JavaScript.getFunctionParameters(b);
+    let c1 = "";
+    let c2 = "";
+
+    for (let i = 0; i < params.length; i++) {
+      if (params[i][0] === '&') {
+        params[i] = params[i].substring(1);
+        const variable = params[i];
+        c1 += variable + ' = { val: ' + variable + '};\n';
+        c2 += variable + ' = ' + variable + '.val;\n';
+      }
+    }
+
+    const newCodeFuncText = Blockly.JavaScript.replaceFunctionParameters(b, params);
+
+    localStorage.setItem('memory', JSON.stringify(memory));
+    return c1 + a + ' = ' + newCodeFuncText + ';\n' + c2;
   }
-  
+
+  if (type_block_a === 'variables_get' && type_block_b === 'pointer') {
+    memory[a]['value'] = 'pending';
+  }
+
   localStorage.setItem('memory', JSON.stringify(memory));
 
   return a + ' = ' + b + ';\n';
@@ -463,6 +482,63 @@ Blockly.JavaScript['math_post_inc_decrement_exp'] = function (block) {
   const dropdown_newop = block.getFieldValue('NEWOP');
   const code = value_var + dropdown_newop + ';\n';
   return code;
+};
+
+Blockly.JavaScript['address'] = function (block) {
+  const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+  const code = '&' + value;
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['pointer'] = function (block) {
+  const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+  const code = value + '.val';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript.getFunctionParameters = function (functionString) {
+  const innerFunctionPattern = /\w+\([^()]*\)/;
+  const matchFunction = functionString.match(innerFunctionPattern);
+
+  if (!matchFunction) return [];
+
+  const codeFunc = matchFunction[0];
+  const parameterPattern = /\(([^)]+)\)/;
+  const match = codeFunc.match(parameterPattern);
+
+  return match && match[1] ? match[1].split(',').map(param => param.trim()) : [];
+}
+
+Blockly.JavaScript.getFunctionName = function (functionString) {
+  const functionNamePattern = /(\w+)\(/;
+  const functionNameMatch = functionString.match(functionNamePattern);
+  return functionNameMatch ? functionNameMatch[1] : '';
+}
+
+Blockly.JavaScript.replaceFunctionParameters = function (functionString, newParameters) {
+  const functionName = Blockly.JavaScript.getFunctionName(functionString);
+  const updatedFunctionString = `${functionName}(${newParameters.join(', ')})`;
+  return updatedFunctionString;
+}
+
+// Override procedures_callnoreturn function
+Blockly.JavaScript.procedures_callnoreturn = function (a) {
+  const codeFuncText = Blockly.JavaScript.procedures_callreturn(a)[0];
+  const params = Blockly.JavaScript.getFunctionParameters(codeFuncText);
+  let c1 = "";
+  let c2 = "";
+
+  for (let i = 0; i < params.length; i++) {
+    if (params[i][0] === '&') {
+      const variable = params[i].substring(1);
+      params[i] = variable;
+      c1 += `${variable} = { val: ${variable} };\n`;
+      c2 += `${variable} = ${variable}.val;\n`;
+    }
+  }
+  const newCodeFuncText = Blockly.JavaScript.replaceFunctionParameters(codeFuncText, params);
+
+  return c1 + newCodeFuncText + ';\n' + c2;
 };
 
 // Generator for main block
