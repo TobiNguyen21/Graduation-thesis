@@ -199,7 +199,7 @@ Blockly.Blocks['repeat_condition'] = {
             ]), 'OP')
             .setAlign(Blockly.ALIGN_RIGHT);
         this.appendValueInput('B')
-            .setCheck(['Number', 'Boolean'])
+            .setCheck(['Number', 'Boolean' ,'variables_get'])
             .setAlign(Blockly.ALIGN_RIGHT);
         this.setOutput(true, 'repeat_condition');
         this.setInputsInline(true);
