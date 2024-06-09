@@ -311,6 +311,12 @@ Blockly.Blocks['variables_array_get_name'] = {
         const workspace = Blockly.getMainWorkspace();
         const arrayBlocks = workspace.getAllBlocks().filter(block => block.type === 'variables_array_declare' || block.type === 'variables_array_initial');
         const options = arrayBlocks.map(block => [block.getFieldValue('VAR'), block.getFieldValue('VAR')]);
+        const memory = JSON.parse(localStorage.getItem('memory'));
+        for (const key in memory) {
+            if (Array.isArray(memory[key].value) && !options.some(option => option[0] === key)) {
+                options.push([`${key}`,`${key}`]);
+            }
+        }
         return [["--Select array name--", "--select--"], ...options];
     }
 };

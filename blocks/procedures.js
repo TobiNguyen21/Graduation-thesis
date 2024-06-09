@@ -40,7 +40,12 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         }
     },
     updateParams_: function () {
-        var params = this.arguments_.map((arg, index) => this.types_[index].replace(/_POINTER/g, " *") + " " + arg);
+        var params = this.arguments_.map((arg, index) => {
+            if (this.types_[index] == "INT_ARRAY" || this.types_[index] == "CHAR_ARRAY") {
+                return this.types_[index].replace(/_ARRAY/g, "") + " " + arg + " " + "[ ]";
+            }
+            return this.types_[index].replace(/_POINTER/g, " *") + " " + arg
+        });
         var paramString = params.length ? " " + params.join(", ") + " " : "";
         Blockly.Events.disable();
         try {
@@ -109,11 +114,22 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     addToMemory: function (varName, varType) {
         if (varName && varType) {
             let memory = JSON.parse(localStorage.getItem('memory'));
+            let value = 'pending';
+
+            if (varType == 'INT_ARRAY') {
+                varType = 'INT';
+                value = [];
+            }
+            if (varType == 'CHAR_ARRAY') {
+                varType = 'CHAR';
+                value = [];
+            }
 
             memory[varName] = {
                 type: varType,
-                value: 'pending'
+                value
             }
+
             localStorage.setItem('memory', JSON.stringify(memory));
 
         }
@@ -128,7 +144,6 @@ Blockly.Blocks['procedures_defnoreturn'] = {
             var type = paramBlock.getFieldValue('TYPE');
             this.arguments_.push(name);
             this.types_.push(type);
-            this.addToMemory(name, type);
             var variable = this.workspace.getVariable(name, '');
             if (variable) {
                 this.argumentVarModels_.push(variable);
@@ -278,45 +293,104 @@ Blockly.Blocks.procedures_mutatorarg = {
         a.oldShowEditorFn_ = a.showEditor_;
         a.showEditor_ = function () {
             this.createdVariables_ = [];
-            this.oldShowEditorFn_()
+            this.oldShowEditorFn_();
         };
-        this.appendDummyInput().appendField(new Blockly.FieldDropdown([["int", "INT"], ["char", "CHAR"], ["int *", "INT_POINTER"], ["char *", "CHAR_POINTER"]]), "TYPE").appendField(a, "NAME");
-        this.setPreviousStatement(!0);
-        this.setNextStatement(!0);
+
+        var typeField = new Blockly.FieldDropdown([
+            ["int", "INT"],
+            ["char", "CHAR"],
+            ["int *", "INT_POINTER"],
+            ["char *", "CHAR_POINTER"],
+            ["int [ ]", "INT_ARRAY"],
+            ["char [ ]", "CHAR_ARRAY"]
+        ]);
+
+        this.appendDummyInput()
+            .appendField(typeField, "TYPE")
+            .appendField(a, "NAME");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
         this.setStyle("procedure_blocks");
         this.setColour(COLOUR_PROCEDURE_BLOCK);
         this.setTooltip(Blockly.Msg.PROCEDURES_MUTATORARG_TOOLTIP);
-        this.contextMenu = !1;
-        a.onFinishEditing_ = this.deleteIntermediateVars_;
+        this.contextMenu = false;
+
+        var self = this;
+
+        // Hàm để thêm biến vào memory
+        var addVariableToMemory = function () {
+            var name = self.getFieldValue('NAME');
+            var type = self.getFieldValue('TYPE');
+            self.addToMemory(name, type);
+        };
+
+        // Thêm biến vào memory sau khi chỉnh sửa xong
+        a.onFinishEditing_ = function (name) {
+            self.deleteIntermediateVars_;
+            addVariableToMemory();
+        };
+
+        // Thêm biến vào memory khi khối được khởi tạo hoặc kéo thả ra
+        setTimeout(addVariableToMemory, 1);
+
+        // Thêm biến vào memory khi thay đổi kiểu dữ liệu
+        typeField.setValidator(function (newType) {
+            setTimeout(addVariableToMemory, 1);
+            return newType;
+        });
+
         a.createdVariables_ = [];
-        a.onFinishEditing_("x")
+        a.onFinishEditing_("x");
     },
     validator_: function (a) {
         var b = this.getSourceBlock(),
             c = Blockly.Mutator.findParentWs(b.workspace);
         a = a.replace(/[\s\xa0]+/g, " ").replace(/^ | $/g, "");
         if (!a) return null;
-        for (var d = (b.workspace.targetWorkspace || b.workspace).getAllBlocks(!1), e = a.toLowerCase(), f = 0; f < d.length; f++)
+        for (var d = (b.workspace.targetWorkspace || b.workspace).getAllBlocks(false), e = a.toLowerCase(), f = 0; f < d.length; f++) {
             if (d[f].id != this.getSourceBlock().id) {
                 var g = d[f].getFieldValue("NAME");
-                if (g && g.toLowerCase() == e) return null
-            } if (b.isInFlyout) return a;
+                if (g && g.toLowerCase() == e) return null;
+            }
+        }
+        if (b.isInFlyout) return a;
         (b = c.getVariable(a, "")) && b.name != a && c.renameVariableById(b.getId(), a);
         b || (b = c.createVariable(a, "")) && this.createdVariables_ && this.createdVariables_.push(b);
-        return a
+        return a;
     },
     deleteIntermediateVars_: function (a) {
         var b = Blockly.Mutator.findParentWs(this.getSourceBlock().workspace);
-        if (b)
+        if (b) {
             for (var c = 0; c < this.createdVariables_.length; c++) {
                 var d = this.createdVariables_[c];
-                d.name != a && b.deleteVariableById(d.getId())
+                d.name != a && b.deleteVariableById(d.getId());
             }
-    }
+        }
+    },
+    addToMemory: function (varName, varType) {
+        if (varName && varType) {
+            let memory = JSON.parse(localStorage.getItem('memory'));
+            let value = 'pending';
+            if (varType == 'INT_ARRAY') {
+                varType = 'INT';
+                value = [];
+            }
+            if (varType == 'CHAR_ARRAY') {
+                varType = 'CHAR';
+                value = [];
+            }
+            memory[varName] = {
+                type: varType,
+                value
+            }
+            localStorage.setItem('memory', JSON.stringify(memory));
+        }
+    },
 };
 // Function to call
 Blockly.Blocks.procedures_callnoreturn = {
     init: function () {
+        console.log('procedures_callnoreturn');
         this.appendDummyInput("TOPROW").appendField("", "NAME").appendField('( );', 'OPEN_CLOSE');
         this.setPreviousStatement(!0);
         this.setNextStatement(!0);
@@ -406,36 +480,55 @@ Blockly.Blocks.procedures_callnoreturn = {
     getVarModels: function () {
         return this.argumentVarModels_
     },
+    getArrayParameters: function () {
+        const arrayBlocks = [];
+        for (let i = 0; i < this.arguments_.length; i++) {
+            const arg = this.getInputTargetBlock("ARG" + i);
+            if (arg && arg.type === 'variables_array_get_name') {
+                const arrayName = arg.getFieldValue('ARRAY');
+                // console.log('Function', this.getProcedureCall(), 'has parameter of type variables_array_get_name', " ", arrayName, i);
+                arrayBlocks.push({
+                    arrayName,
+                    positionParam: i
+                })
+            }
+        }
+        return arrayBlocks;
+    },
     onchange: function (a) {
-        if (this.workspace && !this.workspace.isFlyout && a.recordUndo)
-            if (a.type == Blockly.Events.BLOCK_CREATE && -1 != a.ids.indexOf(this.id)) {
-                var b = this.getProcedureCall();
-                b = Blockly.Procedures.getDefinition(b, this.workspace);
-                !b || b.type == this.defType_ && JSON.stringify(b.getVars()) == JSON.stringify(this.arguments_) || (b = null);
-                if (!b) {
-                    Blockly.Events.setGroup(a.group);
-                    a = Blockly.utils.xml.createElement("xml");
-                    b = Blockly.utils.xml.createElement("block");
-                    b.setAttribute("type", this.defType_);
-                    var c = this.getRelativeToSurfaceXY(),
-                        d = c.y + 2 * Blockly.SNAP_RADIUS;
-                    b.setAttribute("x", c.x + Blockly.SNAP_RADIUS * (this.RTL ? -1 : 1));
-                    b.setAttribute("y", d);
-                    c = this.mutationToDom();
-                    b.appendChild(c);
-                    c = Blockly.utils.xml.createElement("field");
-                    c.setAttribute("name", "NAME");
-                    d = this.getProcedureCall();
-                    d || (d = Blockly.Procedures.findLegalName("", this), this.renameProcedure("", d));
-                    c.appendChild(Blockly.utils.xml.createTextNode(d));
-                    b.appendChild(c);
-                    a.appendChild(b);
-                    Blockly.Xml.domToWorkspace(a, this.workspace);
-                    Blockly.Events.setGroup(!1)
+        if (this.workspace && !this.workspace.isFlyout && a.recordUndo) {
+            let b = this.getProcedureCall();
+            b = Blockly.Procedures.getDefinition(b, this.workspace);
+            if (!b) return;
+
+            const arrayBlocks = this.getArrayParameters();
+            const memory = JSON.parse(localStorage.getItem('memory')) || {};
+
+            for (let i = 0; i < b.types_.length; i++) {
+                const arrayName = b.arguments_[i];
+
+                if (b.types_[i] === 'INT_ARRAY') {
+                    arrayBlocks.forEach((item) => {
+                        if (item.positionParam === i) {
+                            memory[arrayName] = {
+                                type: "INT",
+                                value: memory[item?.arrayName]?.value || []
+                            };
+                        }
+                    });
+                } else if (b.types_[i] === 'CHAR_ARRAY') {
+                    arrayBlocks.forEach((item) => {
+                        if (item.positionParam === i) {
+                            memory[arrayName] = {
+                                type: "CHAR",
+                                value: memory[item?.arrayName]?.value || []
+                            };
+                        }
+                    });
                 }
-            } else a.type == Blockly.Events.BLOCK_DELETE ?
-                (b = this.getProcedureCall(), b = Blockly.Procedures.getDefinition(b, this.workspace), b || (Blockly.Events.setGroup(a.group), this.dispose(!0), Blockly.Events.setGroup(!1))) : a.type == Blockly.Events.CHANGE && "disabled" == a.element && (b = this.getProcedureCall(), (b = Blockly.Procedures.getDefinition(b, this.workspace)) && b.id == a.blockId && ((b = Blockly.Events.getGroup()) && console.log("Saw an existing group while responding to a definition change"), Blockly.Events.setGroup(a.group), a.newValue ? (this.previousEnabledState_ = this.isEnabled(),
-                    this.setEnabled(!1)) : this.setEnabled(this.previousEnabledState_), Blockly.Events.setGroup(b)))
+            }
+            localStorage.setItem('memory', JSON.stringify(memory));
+        }
     },
     customContextMenu: function (a) {
         if (this.workspace.isMovable()) {
@@ -475,6 +568,7 @@ Blockly.Blocks['procedures_callreturn'] = {
     domToMutation: Blockly.Blocks['procedures_callnoreturn'].domToMutation,
     getVars: Blockly.Blocks['procedures_callnoreturn'].getVars,
     getVarModels: Blockly.Blocks['procedures_callnoreturn'].getVarModels,
+    getArrayParameters: Blockly.Blocks['procedures_callnoreturn'].getArrayParameters,
     onchange: Blockly.Blocks['procedures_callnoreturn'].onchange,
     customContextMenu: Blockly.Blocks['procedures_callnoreturn'].customContextMenu,
     defType_: "procedures_defreturn"
