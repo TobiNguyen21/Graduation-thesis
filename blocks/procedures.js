@@ -568,6 +568,7 @@ Blockly.Blocks['procedures_callreturn'] = {
     domToMutation: Blockly.Blocks['procedures_callnoreturn'].domToMutation,
     getVars: Blockly.Blocks['procedures_callnoreturn'].getVars,
     getVarModels: Blockly.Blocks['procedures_callnoreturn'].getVarModels,
+    getArrayParameters: Blockly.Blocks['procedures_callnoreturn'].getArrayParameters,
     onchange: Blockly.Blocks['procedures_callnoreturn'].onchange,
     customContextMenu: Blockly.Blocks['procedures_callnoreturn'].customContextMenu,
     defType_: "procedures_defreturn"
