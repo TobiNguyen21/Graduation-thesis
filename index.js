@@ -55,7 +55,7 @@ class Main {
     this.runButton.disabled = '';
 
     if (clearOutput) {
-      this.outputArea.value = '*********************************************\n => Console:\n*********************************************';
+      this.outputArea.value = '*********************************************\n => Console:\n*********************************************\n';
       this.outputJsArea.value = 'JavaScript output\n\n';
       this.outputCArea.value = 'C output\n\n';
     }

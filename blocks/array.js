@@ -94,6 +94,24 @@ Blockly.Blocks['lists_create_empty_v2'] = {
         }
         this.appendDummyInput('CLOSE')
             .appendField("}");
+    },
+    onchange: function () {
+        if (!this.workspace.isFlyout) {
+            let hasUnconnectedInput = false;
+            for (let i = 0; i < this.itemCount_; i++) {
+                if (!this.getInput('ITEM' + i).connection.targetConnection) {
+                    hasUnconnectedInput = true;
+                    break;
+                }
+            }
+            if (hasUnconnectedInput) {
+                this.setWarningText('Please connect value.');
+                this.setEnabled(false);
+            } else {
+                this.setWarningText(null);
+                this.setEnabled(true);
+            }
+        }
     }
 };
 
@@ -138,9 +156,23 @@ Blockly.Blocks['lists_getValueAtIndex'] = {
         const memory = JSON.parse(localStorage.getItem('memory'));
         for (const key in memory) {
             if (Array.isArray(memory[key].value) && !options.some(option => option[0] === key)) {
-                options.push([`${key}`,`${key}`]);
+                options.push([`${key}`, `${key}`]);
             }
         }
         return [["--Select array name--", "--select--"], ...options];
+    },
+    onchange: function () {
+        const selectedValue = this.getFieldValue('ARRAY');
+        if (!this.workspace.isFlyout && selectedValue === '--select--') {
+            this.setWarningText('Please select a valid array name.');
+            this.setEnabled(false);
+        } else if (!this.workspace.isFlyout && !this.getInputTargetBlock('INDEX')) {
+            this.setWarningText('Please connect value.');
+            this.setEnabled(false);
+        }
+        else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
     }
 };
