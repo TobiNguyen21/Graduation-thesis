@@ -21,21 +21,18 @@ class Main {
   }
 
   static initApi(interpreter, globalObject) {
-    // Add an API function for the alert() block, generated for "text_print" blocks.
     interpreter.setProperty(globalObject, 'alert',
       interpreter.createNativeFunction(text => {
         text = arguments.length ? text : '';
         this.outputArea.value += '\n' + text;
       }));
 
-    // Add an API function for the prompt() block.
     let wrapper = text => {
       return interpreter.createPrimitive(prompt(text));
     };
     interpreter.setProperty(globalObject, 'prompt',
       interpreter.createNativeFunction(wrapper));
 
-    // Add an API function for highlighting blocks.
     wrapper = id => {
       id = String(id || '');
       return interpreter.createPrimitive(this.highlightBlock(id));
@@ -70,7 +67,6 @@ class Main {
   }
 
   static generateCodeAndLoadIntoInterpreter() {
-    // Generate JavaScript code and parse it.
     Blockly.JavaScript.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
     Blockly.JavaScript.addReservedWords('highlightBlock');
     this.latestCode = Blockly.JavaScript.workspaceToCode(this.demoWorkspace);
@@ -102,19 +98,14 @@ class Main {
 
   static runCode(ev) {
     if (!this.myInterpreter) {
-      // First statement of this code.
-      // Clear the program output.
       this.resetStepUi(true);
       this.runButton.disabled = 'disabled';
 
-      // And then show generated code in an alert.
-      // In a timeout to allow the outputArea.value to reset first.
       setTimeout(() => {
         this.outputJsArea.value += this.isOutputChecked ?
           this.latestCode.replace(/highlightBlock\(.+\);/gi, '').replace(/\n\s*\n/g, '\n') :
           this.latestCode;
 
-        // Begin execution
         this.highlightPause = false;
         try {
           this.myInterpreter = new Interpreter(this.latestCode, this.initApi.bind(this));
@@ -122,11 +113,8 @@ class Main {
             if (this.myInterpreter) {
               let hasMore = this.myInterpreter.run();
               if (hasMore) {
-                // Execution is currently blocked by some async call.
-                // Try again later.
                 setTimeout(this.runner, 10);
               } else {
-                // Program is complete.
                 this.outputArea.value += '\n\n<< Program complete >>';
                 this.resetInterpreter();
                 this.resetStepUi(false);
@@ -146,13 +134,9 @@ class Main {
 
   static stepCode(ev) {
     if (!this.myInterpreter) {
-      // First statement of this code.
-      // Clear the program output.
       this.resetStepUi(true);
       this.myInterpreter = new Interpreter(this.latestCode, this.initApi.bind(this));
 
-      // And then show generated code in an alert.
-      // In a timeout to allow the outputArea.value to reset first.
       setTimeout(() => {
         this.outputJsArea.value += this.isOutputChecked ?
           this.latestCode.replace(/highlightBlock\(.+\);/gi, '').replace(/\n\s*\n/g, '\n') :
@@ -168,13 +152,11 @@ class Main {
         this.hasMoreCode = this.myInterpreter.step();
       } finally {
         if (!this.hasMoreCode) {
-          // Program complete, no more code to execute.
           this.outputArea.value += '\n\n<< Program complete >>';
 
           this.myInterpreter = null;
           this.resetStepUi(false);
 
-          // Cool down, to discourage accidentally restarting the program.
           this.stepButton.disabled = 'disabled';
           setTimeout(() => {
             this.stepButton.disabled = '';
@@ -182,7 +164,7 @@ class Main {
           return;
         }
       }
-   
+
     } while (this.hasMoreCode && !this.highlightPause);
   }
 
@@ -225,15 +207,12 @@ class Main {
               const xmlString = fileContent.substring(0, memoryIndex);
               const memoryString = fileContent.substring(memoryIndex + "MEMORY".length);
 
-              // Save memory part to localStorage
               localStorage.setItem('memory', memoryString.trim());
 
-              // Load blocks into the workspaces
               const xml = Blockly.Xml.textToDom(xmlString);
               this.demoWorkspace.clear();
               Blockly.Xml.domToWorkspace(xml, this.demoWorkspace);
 
-              // Set program name
               const fileName = file.name.replace(/\.[^.]+$/, "");
               document.getElementById('program_name').value = fileName;
             } else {
@@ -296,7 +275,7 @@ class Main {
         wheel: true
       }
     });
-    // Create main block
+
     this.createMainBlock();
 
     Blockly.JavaScript.addReservedWords('exit');
@@ -314,7 +293,6 @@ class Main {
     this.generateCodeAndLoadIntoInterpreter();
     this.demoWorkspace.addChangeListener(event => {
       if (!(event instanceof Blockly.Events.Ui)) {
-        // Something changed. Parser needs to be reloaded.
         this.resetInterpreter();
         this.generateCodeAndLoadIntoInterpreter();
       }
@@ -332,9 +310,8 @@ class Main {
       }
 
     });
-    this.demoWorkspace.toolbox_.flyout_.autoClose = false; // Turn-off autoClose sub-toolBox
+    this.demoWorkspace.toolbox_.flyout_.autoClose = false;
 
-    // Add event listener to close toolbox when a block from Functions category is dragged out
     this.demoWorkspace.addChangeListener(event => {
       if (event.type === Blockly.Events.BLOCK_CREATE) {
         const block = this.demoWorkspace.getBlockById(event.blockId);

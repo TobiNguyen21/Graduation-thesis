@@ -1,7 +1,7 @@
 "use strict";
 
 const blocks = 'blocks';
-const LOG_NAME_BLOCK = true;
+const LOG_NAME_BLOCK = false;
 
 document.write(`<script src="${blocks}/blocks_compressed.js"></script>`)
 document.write(`<script src="${blocks}/stdio.js"></script>`);
