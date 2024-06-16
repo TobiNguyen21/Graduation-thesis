@@ -56,7 +56,6 @@ Blockly.Blocks['lists_create_empty_v2'] = {
                 this.getInput('ITEM' + i).connection.connect(connections[i]);
             }
         }
-        // Move the "]" field to the end
         if (this.getInput('CLOSE')) {
             this.removeInput('CLOSE');
         }
@@ -75,7 +74,6 @@ Blockly.Blocks['lists_create_empty_v2'] = {
         }
     },
     updateShape_: function () {
-        // Add or remove Value Inputs based on current itemCount_
         for (var i = 0; i < this.itemCount_; i++) {
             if (!this.getInput('ITEM' + i)) {
                 this.appendValueInput('ITEM' + i)
@@ -88,7 +86,6 @@ Blockly.Blocks['lists_create_empty_v2'] = {
             this.removeInput('ITEM' + i);
             i++;
         }
-        // Move the "]" field to the end
         if (this.getInput('CLOSE')) {
             this.removeInput('CLOSE');
         }
