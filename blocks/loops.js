@@ -205,6 +205,17 @@ Blockly.Blocks['repeat_condition'] = {
         this.setInputsInline(true);
         this.setTooltip('repeat condition');
         this.setHelpUrl('');
+    },
+    onchange: function (a) {
+        const val_a = this.getInputTargetBlock("A");
+        const val_b = this.getInputTargetBlock("B")
+        if (!this.isInFlyout && (!val_a || !val_b)) {
+            this.setWarningText('Both left and right must be filled.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
     }
 };
 
@@ -221,6 +232,16 @@ Blockly.Blocks['math_post_inc_decrement'] = {
         this.setInputsInline(!0);
         this.tag = Blockly.Msg.TAG_MATH_POST_INC_DECREMENT;
         this.setTooltip(Blockly.Msg.MATH_POST_INC_DECREMENT_TOOLTIP)
+    },
+    onchange: function (a){
+        const val = this.getInputTargetBlock("VAR");
+        if (!this.isInFlyout && !val) {
+            this.setWarningText('Please connect value.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
     }
 };
 
@@ -234,5 +255,15 @@ Blockly.Blocks['math_prev_inc_decrement'] = {
         this.setOutput(true, ["Number"]);
         this.appendValueInput("VAR").setCheck("variables_get".split(" ")).appendField(new Blockly.FieldDropdown(a), "NEWOP");
         this.setInputsInline(!0);
+    },
+    onchange: function (a){
+        const val = this.getInputTargetBlock("VAR");
+        if (!this.isInFlyout && !val) {
+            this.setWarningText('Please connect value.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
     }
 };
