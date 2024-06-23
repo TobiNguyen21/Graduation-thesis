@@ -8,6 +8,7 @@ Blockly.Msg.LISTS_HUE = '260';
 Blockly.Msg.COLOUR_HUE = '20';
 Blockly.Msg.VARIABLES_HUE = '30';
 Blockly.Msg.PROCEDURES_HUE = '230';
+Blockly.Msg.CONSTANT = '500';
 
 Blockly.Msg.OUTPUT_HUE = '180';
 Blockly.Msg.INPUT_HUE = '15';
