@@ -8,8 +8,8 @@
                 </shadow>
             </value>
         </block>
-        <block type="address"></block>
-        <block type="pointer"></block>
+        <!-- <block type="address"></block>
+        <block type="pointer"></block> -->
     </category>
     <category name="Input" colour="%{BKY_INPUT_HUE}">
         <block type="text_scanf">
