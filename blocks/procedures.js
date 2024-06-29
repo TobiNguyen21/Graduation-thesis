@@ -10,15 +10,19 @@ function checkReadyFunctionForEvent(e, workspace) {
             && e.type == Blockly.Events.CLICK)
 }
 
-Blockly.Blocks.procedures.saveFunctionToLocalStorage = function (name, types, args) {
+Blockly.Blocks.procedures.saveFunctionToLocalStorage = function (name, typeFunc, types, args) {
     let memory = JSON.parse(localStorage.getItem('memory')) || {};
     let params = args.map((arg, index) => ({
         [arg]: types[index]
     }));
     memory[name] = {
-        type: "FUNCTION",
-        params: params
+        type: typeFunc,
+        params: params,
+        isFunction: 1
     };
+    if (typeFunc !== 'VOID') {
+        memory[name]['value'] = 'pending';
+    }
     localStorage.setItem('memory', JSON.stringify(memory));
 };
 
@@ -181,11 +185,11 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         this.setStatements_(true);
         Blockly.Mutator.reconnect(this.statementConnection_, this, 'STACK');
         this.statementConnection_ = null;
-        Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), this.types_, this.arguments_);
+        Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), 'VOID', this.types_, this.arguments_);
     },
     onchange: function (e) {
         if (checkReadyFunctionForEvent(e, this.workspace)) {
-            Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), this.types_, this.arguments_);
+            Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), 'VOID', this.types_, this.arguments_);
         }
     },
     getProcedureDef: function () {
@@ -281,9 +285,10 @@ Blockly.Blocks['procedures_defreturn'] = {
         if ((this.workspace.isDragging && !this.workspace.isDragging() && e.type == Blockly.Events.BLOCK_DRAG)
             || (this.workspace.isDragging && !this.workspace.isDragging() && e.type == Blockly.Events.CLICK)
         ) {
-            const varName = this.getFieldValue("NAME");
-            const varType = this.getFieldValue("TYPE");
-            this.addToMemory(varName, varType)
+            // const varName = this.getFieldValue("NAME");
+            // const varType = this.getFieldValue("TYPE");
+            // this.addToMemory(varName, varType)
+            Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), this.getFieldValue("TYPE"), this.types_, this.arguments_);
         }
     },
     setStatements_: Blockly.Blocks.procedures_defnoreturn.setStatements_,
@@ -292,7 +297,31 @@ Blockly.Blocks['procedures_defreturn'] = {
     domToMutation: Blockly.Blocks.procedures_defnoreturn.domToMutation,
     decompose: Blockly.Blocks.procedures_defnoreturn.decompose,
     addToMemory: Blockly.Blocks.procedures_defnoreturn.addToMemory,
-    compose: Blockly.Blocks.procedures_defnoreturn.compose,
+    compose: function (containerBlock) {
+        this.arguments_ = [];
+        this.types_ = [];
+        this.argumentVarModels_ = [];
+        var paramBlock = containerBlock.getInputTargetBlock('STACK');
+        while (paramBlock) {
+            var name = paramBlock.getFieldValue('NAME');
+            var type = paramBlock.getFieldValue('TYPE');
+            this.arguments_.push(name);
+            this.types_.push(type);
+            var variable = this.workspace.getVariable(name, '');
+            if (variable) {
+                this.argumentVarModels_.push(variable);
+            } else {
+                console.warn('Failed to get a variable with name ' + name);
+            }
+            paramBlock = paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
+        }
+        this.updateParams_();
+        Blockly.Procedures.mutateCallers(this);
+        this.setStatements_(true);
+        Blockly.Mutator.reconnect(this.statementConnection_, this, 'STACK');
+        this.statementConnection_ = null;
+        Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), this.getFieldValue("TYPE"), this.types_, this.arguments_);
+    },
     getProcedureDef: function () {
         return [this.getFieldValue("NAME"), this.arguments_, !0]
     },
