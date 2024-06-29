@@ -8,14 +8,19 @@
                 </shadow>
             </value>
         </block>
-        <block type="single_character_input"></block>
-        <block type="address"></block>
-        <block type="pointer"></block>
+        <!-- <block type="address"></block>
+        <block type="pointer"></block> -->
     </category>
     <category name="Input" colour="%{BKY_INPUT_HUE}">
         <block type="text_scanf">
             <value name="TEXT">
             </value>
+        </block>
+    </category>
+    <category name="Constants" colour="%{BKY_CONSTANT}">
+        <block type="single_character_input"></block>
+        <block type="math_number" gap="32">
+            <field name="NUM">10</field>
         </block>
     </category>
 

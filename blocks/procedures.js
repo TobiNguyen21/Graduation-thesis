@@ -3,6 +3,29 @@ const COLOUR_PROCEDURE_BLOCK = 230;
 
 Blockly.Blocks.procedures = {};
 
+function checkReadyFunctionForEvent(e, workspace) {
+    return (workspace.isDragging && !workspace.isDragging()
+        && e.type == Blockly.Events.BLOCK_DRAG)
+        || (workspace.isDragging && !workspace.isDragging()
+            && e.type == Blockly.Events.CLICK)
+}
+
+Blockly.Blocks.procedures.saveFunctionToLocalStorage = function (name, typeFunc, types, args) {
+    let memory = JSON.parse(localStorage.getItem('memory')) || {};
+    let params = args.map((arg, index) => ({
+        [arg]: types[index]
+    }));
+    memory[name] = {
+        type: typeFunc,
+        params: params,
+        isFunction: 1
+    };
+    if (typeFunc !== 'VOID') {
+        memory[name]['value'] = 'pending';
+    }
+    localStorage.setItem('memory', JSON.stringify(memory));
+};
+
 // Function to defined
 Blockly.Blocks['procedures_defnoreturn'] = {
     init: function () {
@@ -43,6 +66,9 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         var params = this.arguments_.map((arg, index) => {
             if (this.types_[index] == "INT_ARRAY" || this.types_[index] == "CHAR_ARRAY") {
                 return this.types_[index].replace(/_ARRAY/g, "") + " " + arg + " " + "[ ]";
+            }
+            if (this.types_[index] == "INT_REF" || this.types_[index] == "CHAR_REF") {
+                return this.types_[index].replace(/_REF/g, " &") + arg
             }
             return this.types_[index].replace(/_POINTER/g, " *") + " " + arg
         });
@@ -115,7 +141,6 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         if (varName && varType) {
             let memory = JSON.parse(localStorage.getItem('memory'));
             let value = 'pending';
-
             if (varType == 'INT_ARRAY') {
                 varType = 'INT';
                 value = [];
@@ -124,14 +149,17 @@ Blockly.Blocks['procedures_defnoreturn'] = {
                 varType = 'CHAR';
                 value = [];
             }
-
+            if (varType == 'INT_REF') {
+                varType = 'INT';
+            }
+            if (varType == 'CHAR_REF') {
+                varType = 'CHAR';
+            }
             memory[varName] = {
                 type: varType,
                 value
             }
-
             localStorage.setItem('memory', JSON.stringify(memory));
-
         }
     },
     compose: function (containerBlock) {
@@ -157,6 +185,12 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         this.setStatements_(true);
         Blockly.Mutator.reconnect(this.statementConnection_, this, 'STACK');
         this.statementConnection_ = null;
+        Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), 'VOID', this.types_, this.arguments_);
+    },
+    onchange: function (e) {
+        if (checkReadyFunctionForEvent(e, this.workspace)) {
+            Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), 'VOID', this.types_, this.arguments_);
+        }
     },
     getProcedureDef: function () {
         return [this.getFieldValue('NAME'), this.arguments_, false];
@@ -251,9 +285,10 @@ Blockly.Blocks['procedures_defreturn'] = {
         if ((this.workspace.isDragging && !this.workspace.isDragging() && e.type == Blockly.Events.BLOCK_DRAG)
             || (this.workspace.isDragging && !this.workspace.isDragging() && e.type == Blockly.Events.CLICK)
         ) {
-            const varName = this.getFieldValue("NAME");
-            const varType = this.getFieldValue("TYPE");
-            this.addToMemory(varName, varType)
+            // const varName = this.getFieldValue("NAME");
+            // const varType = this.getFieldValue("TYPE");
+            // this.addToMemory(varName, varType)
+            Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), this.getFieldValue("TYPE"), this.types_, this.arguments_);
         }
     },
     setStatements_: Blockly.Blocks.procedures_defnoreturn.setStatements_,
@@ -262,7 +297,31 @@ Blockly.Blocks['procedures_defreturn'] = {
     domToMutation: Blockly.Blocks.procedures_defnoreturn.domToMutation,
     decompose: Blockly.Blocks.procedures_defnoreturn.decompose,
     addToMemory: Blockly.Blocks.procedures_defnoreturn.addToMemory,
-    compose: Blockly.Blocks.procedures_defnoreturn.compose,
+    compose: function (containerBlock) {
+        this.arguments_ = [];
+        this.types_ = [];
+        this.argumentVarModels_ = [];
+        var paramBlock = containerBlock.getInputTargetBlock('STACK');
+        while (paramBlock) {
+            var name = paramBlock.getFieldValue('NAME');
+            var type = paramBlock.getFieldValue('TYPE');
+            this.arguments_.push(name);
+            this.types_.push(type);
+            var variable = this.workspace.getVariable(name, '');
+            if (variable) {
+                this.argumentVarModels_.push(variable);
+            } else {
+                console.warn('Failed to get a variable with name ' + name);
+            }
+            paramBlock = paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
+        }
+        this.updateParams_();
+        Blockly.Procedures.mutateCallers(this);
+        this.setStatements_(true);
+        Blockly.Mutator.reconnect(this.statementConnection_, this, 'STACK');
+        this.statementConnection_ = null;
+        Blockly.Blocks.procedures.saveFunctionToLocalStorage(this.getFieldValue('NAME'), this.getFieldValue("TYPE"), this.types_, this.arguments_);
+    },
     getProcedureDef: function () {
         return [this.getFieldValue("NAME"), this.arguments_, !0]
     },
@@ -299,8 +358,10 @@ Blockly.Blocks.procedures_mutatorarg = {
         var typeField = new Blockly.FieldDropdown([
             ["int", "INT"],
             ["char", "CHAR"],
-            ["int *", "INT_POINTER"],
-            ["char *", "CHAR_POINTER"],
+            // ["int *", "INT_POINTER"],
+            // ["char *", "CHAR_POINTER"],
+            ["int &", "INT_REF"],
+            ["char &", "CHAR_REF"],
             ["int [ ]", "INT_ARRAY"],
             ["char [ ]", "CHAR_ARRAY"]
         ]);
@@ -317,23 +378,19 @@ Blockly.Blocks.procedures_mutatorarg = {
 
         var self = this;
 
-        // Hàm để thêm biến vào memory
         var addVariableToMemory = function () {
             var name = self.getFieldValue('NAME');
             var type = self.getFieldValue('TYPE');
             self.addToMemory(name, type);
         };
 
-        // Thêm biến vào memory sau khi chỉnh sửa xong
         a.onFinishEditing_ = function (name) {
             self.deleteIntermediateVars_;
             addVariableToMemory();
         };
 
-        // Thêm biến vào memory khi khối được khởi tạo hoặc kéo thả ra
         setTimeout(addVariableToMemory, 1);
 
-        // Thêm biến vào memory khi thay đổi kiểu dữ liệu
         typeField.setValidator(function (newType) {
             setTimeout(addVariableToMemory, 1);
             return newType;
@@ -378,6 +435,12 @@ Blockly.Blocks.procedures_mutatorarg = {
             if (varType == 'CHAR_ARRAY') {
                 varType = 'CHAR';
                 value = [];
+            }
+            if (varType == 'INT_REF') {
+                varType = 'INT';
+            }
+            if (varType == 'CHAR_REF') {
+                varType = 'CHAR';
             }
             memory[varName] = {
                 type: varType,
@@ -486,7 +549,6 @@ Blockly.Blocks.procedures_callnoreturn = {
             const arg = this.getInputTargetBlock("ARG" + i);
             if (arg && arg.type === 'variables_array_get_name') {
                 const arrayName = arg.getFieldValue('ARRAY');
-                // console.log('Function', this.getProcedureCall(), 'has parameter of type variables_array_get_name', " ", arrayName, i);
                 arrayBlocks.push({
                     arrayName,
                     positionParam: i
@@ -547,6 +609,7 @@ Blockly.Blocks.procedures_callnoreturn = {
     },
     defType_: "procedures_defnoreturn"
 };
+
 Blockly.Blocks['procedures_callreturn'] = {
     init: function () {
         this.appendDummyInput("TOPROW").appendField("", "NAME").appendField('( );', 'OPEN_CLOSE');

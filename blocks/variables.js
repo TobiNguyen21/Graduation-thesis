@@ -198,7 +198,7 @@ Blockly.Blocks['variables_declare'] = {
     onchange: function (e) {
         const varName = this.getFieldValue("VAR");
 
-        if(!this.isValidVariableName(varName)){
+        if (!this.isValidVariableName(varName)) {
             this.setWarningText('Invalid variable name !');
             this.setEnabled(false);
         }
@@ -221,9 +221,9 @@ Blockly.Blocks['variables_assignment'] = {
         this.setTooltip('');
         this.appendDummyInput().appendField(';');
     },
-    onchange: function(changeEvent) {
+    onchange: function (changeEvent) {
         if (!this.workspace || changeEvent.type === Blockly.Events.MOVE) {
-            return; 
+            return;
         }
         const blockA = this.getInputTargetBlock('A');
         const blockB = this.getInputTargetBlock('B');
@@ -291,9 +291,14 @@ Blockly.Blocks['variables_array_initial'] = {
     },
     onchange: function () {
         const lengthInput = Blockly.JavaScript.valueToCode(this, 'LENGTH', Blockly.JavaScript.ORDER_ATOMIC);
-        if (lengthInput === '0') {
-            window.alert('Length cannot be 0.');
-            this.getInputTargetBlock('LENGTH').dispose();
+        if (!this.isInFlyout && lengthInput === '0') {
+            // window.alert('Length cannot be 0.');
+            // this.getInputTargetBlock('LENGTH').dispose();
+            this.setWarningText('Length cannot be 0.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
         }
     }
 };
@@ -314,15 +319,25 @@ Blockly.Blocks['variables_array_get_name'] = {
         const memory = JSON.parse(localStorage.getItem('memory'));
         for (const key in memory) {
             if (Array.isArray(memory[key].value) && !options.some(option => option[0] === key)) {
-                options.push([`${key}`,`${key}`]);
+                options.push([`${key}`, `${key}`]);
             }
         }
         return [["--Select array name--", "--select--"], ...options];
+    },
+    onchange: function () {
+        const selectedValue = this.getFieldValue('ARRAY');
+        if (!this.workspace.isFlyout && selectedValue === '--select--') {
+            this.setWarningText('Please select a valid array name.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
     }
 };
 
 Blockly.Blocks['address'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput("VALUE")
             .setCheck(["variables_get"])
             .appendField("&");
@@ -334,7 +349,7 @@ Blockly.Blocks['address'] = {
 };
 
 Blockly.Blocks['pointer'] = {
-    init: function() {
+    init: function () {
         this.appendValueInput("VALUE")
             .setCheck(["variables_get"])
             .appendField("*");

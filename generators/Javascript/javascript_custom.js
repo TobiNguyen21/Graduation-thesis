@@ -20,12 +20,13 @@ Blockly.JavaScript.variables_declare = function (block) {
 };
 
 Blockly.JavaScript.variables_assignment = function (block) {
-  const a = Blockly.JavaScript.valueToCode(block, 'A', Blockly.JavaScript.ORDER_ATOMIC);
-  const b = Blockly.JavaScript.valueToCode(block, 'B', Blockly.JavaScript.ORDER_ATOMIC);
+  const a_origin = Blockly.JavaScript.valueToCode(block, 'A', Blockly.JavaScript.ORDER_ATOMIC);
+  const b_origin = Blockly.JavaScript.valueToCode(block, 'B', Blockly.JavaScript.ORDER_ATOMIC);
   const type_block_a = block.getInputTargetBlock('A')?.type || undefined;
   const type_block_b = block.getInputTargetBlock('B')?.type || 'no_value';
   const memory = JSON.parse(localStorage.getItem('memory'));
-
+  const a = Blockly.JavaScript.removeDotVal(a_origin);
+  const b = Blockly.JavaScript.removeDotVal(b_origin);
 
   const getArrayAndIndex = (str) => {
     const matches = str.match(/([a-zA-Z_]\w*)\[(\d+)\]/);
@@ -185,7 +186,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     })
 
     const params = Blockly.JavaScript.getFunctionParameters(b);
-    let c1 = "";
+    let c1 = "";  
     let c2 = "";
 
     for (let i = 0; i < params.length; i++) {
@@ -194,6 +195,17 @@ Blockly.JavaScript.variables_assignment = function (block) {
         const variable = params[i];
         c1 += variable + ' = { val: ' + variable + '};\n';
         c2 += variable + ' = ' + variable + '.val;\n';
+      }
+      if (
+        memory[funcName]?.params[i]
+        && (Object.values(memory[funcName]?.params[i])[0] == 'INT_REF'
+          || Object.values(memory[funcName]?.params[i])[0] == 'CHAR_REF')
+      ) {
+        const variable = params[i];
+        if (variable !== 'null') {
+          c1 += `${variable} = { val: ${variable} };\n`;
+          c2 += `${variable} = ${variable}.val;\n`;
+        }
       }
     }
 
@@ -209,13 +221,16 @@ Blockly.JavaScript.variables_assignment = function (block) {
 
   localStorage.setItem('memory', JSON.stringify(memory));
 
-  return a + ' = ' + b + ';\n';
+  // if (checkPassRef(memory, a)) a = a + '.val';
+  // if (checkPassRef(memory, b)) b = b + '.val';
+
+  return a_origin + ' = ' + b_origin + ';\n';
 };
 
 // Override method variables_get
 Blockly.JavaScript['variables_get_original'] = Blockly.JavaScript['variables_get'];
 Blockly.JavaScript['variables_get'] = function (block) {
-  const code = Blockly.JavaScript['variables_get_original'](block);
+  let code = Blockly.JavaScript['variables_get_original'](block);
   const memory = JSON.parse(localStorage.getItem('memory'));
   const variableName = block.getField("VAR").getVariable().name;
 
@@ -224,6 +239,11 @@ Blockly.JavaScript['variables_get'] = function (block) {
     block.dispose();
     return;
   }
+
+  if (Blockly.JavaScript.checkPassRef(memory, variableName)) {
+    code[0] += '.val';
+  }
+
   return code;
 };
 
@@ -509,6 +529,13 @@ Blockly.JavaScript.getFunctionParameters = function (functionString) {
   return match && match[1] ? match[1].split(',').map(param => param.trim()) : [];
 }
 
+// Blockly.JavaScript.getFunctionName = function (functionString) {
+//   const functionNamePattern = /^\s*function\s+([^\s(]+)/;
+//   const match = functionString.match(functionNamePattern);
+//   if (!match) return '';
+//   return match[1];
+// };
+
 Blockly.JavaScript.getFunctionName = function (functionString) {
   const functionNamePattern = /(\w+)\(/;
   const functionNameMatch = functionString.match(functionNamePattern);
@@ -525,8 +552,11 @@ Blockly.JavaScript.replaceFunctionParameters = function (functionString, newPara
 Blockly.JavaScript.procedures_callnoreturn = function (a) {
   const codeFuncText = Blockly.JavaScript.procedures_callreturn(a)[0];
   const params = Blockly.JavaScript.getFunctionParameters(codeFuncText);
+  const functionName = Blockly.JavaScript.getFunctionName(codeFuncText);
+  let memory = JSON.parse(localStorage.getItem('memory')) || {};
   let c1 = "";
   let c2 = "";
+  const newCodeFuncText = Blockly.JavaScript.replaceFunctionParameters(codeFuncText, params);
 
   for (let i = 0; i < params.length; i++) {
     if (params[i][0] === '&') {
@@ -535,11 +565,36 @@ Blockly.JavaScript.procedures_callnoreturn = function (a) {
       c1 += `${variable} = { val: ${variable} };\n`;
       c2 += `${variable} = ${variable}.val;\n`;
     }
+    if (
+      memory[functionName]?.params[i]
+      && (Object.values(memory[functionName]?.params[i])[0] == 'INT_REF'
+        || Object.values(memory[functionName]?.params[i])[0] == 'CHAR_REF')
+    ) {
+      const variable = params[i];
+      if (variable !== 'null') {
+        c1 += `${variable} = { val: ${variable} };\n`;
+        c2 += `${variable} = ${variable}.val;\n`;
+      }
+    }
   }
-  const newCodeFuncText = Blockly.JavaScript.replaceFunctionParameters(codeFuncText, params);
-
   return c1 + newCodeFuncText + ';\n' + c2;
 };
+
+Blockly.JavaScript.checkPassRef = function (memory, varName) {
+  for (const key in memory) {
+    if (memory[key].isFunction == 1 && Array.isArray(memory[key].params)) {
+      for (const param of memory[key].params) {
+        if (param[varName] === "INT_REF" || param[varName] === "CHAR_REF") {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+Blockly.JavaScript.removeDotVal = function (str) {
+  return str.replace('.val', '');
+}
 
 // Generator for main block
 Blockly.JavaScript['main_block'] = function (block) {

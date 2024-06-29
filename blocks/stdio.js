@@ -141,6 +141,8 @@ Blockly.Blocks.text_scanf = {
 
     if (inputConnection.targetConnection) {
       connectedBlock = inputConnection.targetConnection.sourceBlock_;
+      this.setWarningText(null);
+      this.setEnabled(true);
 
       if (connectedBlock.type === 'variables_get') {
         const memory = JSON.parse(localStorage.getItem('memory'));
@@ -157,7 +159,7 @@ Blockly.Blocks.text_scanf = {
         const memory = JSON.parse(localStorage.getItem('memory'));
         const arrayName = connectedBlock.getField("ARRAY").value_;
         const index = +(Blockly.JavaScript.valueToCode(connectedBlock, 'INDEX', Blockly.JavaScript.ORDER_NONE)) || 0;
-  
+
         if (arrayName !== Blockly.Msg.SELECT_VALUE) {
           if (memory[arrayName]?.type === 'INT')
             this.getField('TYPE').setValue('%d');
@@ -179,6 +181,9 @@ Blockly.Blocks.text_scanf = {
         window.alert("input must be a variable.");
         connectedBlock.dispose();
       }
+    } else if (!this.isInFlyout) {
+      this.setWarningText('Please connect value.');
+      this.setEnabled(false);
     }
   }
 };

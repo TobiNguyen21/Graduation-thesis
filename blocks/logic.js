@@ -102,6 +102,7 @@ Blockly.defineBlocksWithJsonArray([{
     inputsInline: !0,
     output: "Boolean",
     style: "logic_blocks",
+    extensions: ["logic_operation"]
 }, {
     type: "logic_negate",
     message0: "%{BKY_LOGIC_NEGATE_TITLE}",
@@ -112,6 +113,7 @@ Blockly.defineBlocksWithJsonArray([{
     }],
     output: "Boolean",
     style: "logic_blocks",
+    extensions: ['logic_negate']
 }, {
     type: "logic_null",
     message0: "%{BKY_LOGIC_NULL}",
@@ -271,9 +273,56 @@ Blockly.Constants.Logic.LOGIC_COMPARE_ONCHANGE_MIXIN = {
             b.isShadow() || this.getInput("B").connection.connect(b.outputConnection)), this.bumpNeighbours(), Blockly.Events.setGroup(!1));
         this.prevBlocks_[0] = this.getInputTargetBlock("A");
         this.prevBlocks_[1] = this.getInputTargetBlock("B")
+        if (!this.isInFlyout && (!this.prevBlocks_[0] || !this.prevBlocks_[1])) {
+            this.setWarningText('Both left and right must be filled.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
     }
 };
 Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION = function () {
     this.mixin(Blockly.Constants.Logic.LOGIC_COMPARE_ONCHANGE_MIXIN)
 };
 Blockly.Extensions.register("logic_compare", Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION);
+
+Blockly.Constants.Logic.LOGIC_OPERATOR_ONCHANGE_MIXIN = {
+    onchange: function (a) {
+        this.prevBlocks_ || (this.prevBlocks_ = [null, null]);
+        var b = this.getInputTargetBlock("A"),
+            c = this.getInputTargetBlock("B");
+        b && c && !this.workspace.connectionChecker.doTypeChecks(b.outputConnection, c.outputConnection) && (Blockly.Events.setGroup(a.group), a = this.prevBlocks_[0], a !== b && (b.unplug(), !a || a.isDisposed() || a.isShadow() || this.getInput("A").connection.connect(a.outputConnection)), b = this.prevBlocks_[1], b !== c && (c.unplug(), !b || b.isDisposed() ||
+            b.isShadow() || this.getInput("B").connection.connect(b.outputConnection)), this.bumpNeighbours(), Blockly.Events.setGroup(!1));
+        this.prevBlocks_[0] = this.getInputTargetBlock("A");
+        this.prevBlocks_[1] = this.getInputTargetBlock("B")
+        if (!this.isInFlyout && (!this.prevBlocks_[0] || !this.prevBlocks_[1])) {
+            this.setWarningText('Both left and right must be filled.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
+    }
+};
+Blockly.Constants.Logic.LOGIC_OPERATOR_EXTENSION = function () {
+    this.mixin(Blockly.Constants.Logic.LOGIC_OPERATOR_ONCHANGE_MIXIN)
+};
+Blockly.Extensions.register("logic_operation", Blockly.Constants.Logic.LOGIC_OPERATOR_EXTENSION);
+
+Blockly.Constants.Logic.LOGIC_NEGATE_ONCHANGE_MIXIN = {
+    onchange: function (a) {
+        const element = this.getInputTargetBlock("BOOL")
+        if (!this.isInFlyout && !element) {
+            this.setWarningText('Please connect value.');
+            this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
+        }
+    }
+};
+Blockly.Constants.Logic.LOGIC_NEGATE_EXTENSION = function () {
+    this.mixin(Blockly.Constants.Logic.LOGIC_NEGATE_ONCHANGE_MIXIN)
+};
+Blockly.Extensions.register("logic_negate", Blockly.Constants.Logic.LOGIC_NEGATE_EXTENSION);
