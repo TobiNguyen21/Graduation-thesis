@@ -58,7 +58,7 @@ Blockly.JavaScript.init = function(a) {
     for (var b = [], c = Blockly.Variables.allDeveloperVariables(a), d = 0; d < c.length; d++) b.push(Blockly.JavaScript.variableDB_.getName(c[d], Blockly.Names.DEVELOPER_VARIABLE_TYPE));
     a = Blockly.Variables.allUsedVarModels(a);
     for (d = 0; d < a.length; d++) b.push(Blockly.JavaScript.variableDB_.getName(a[d].getId(), Blockly.VARIABLE_CATEGORY_NAME));
-    b.length && (Blockly.JavaScript.definitions_.variables = "var " + b.join(", ") + ";");
+    // b.length && (Blockly.JavaScript.definitions_.variables = "var " + b.join(", ") + ";");
     this.isInitialized = !0
 };
 Blockly.JavaScript.finish = function(a) {
