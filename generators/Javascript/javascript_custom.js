@@ -85,27 +85,34 @@ Blockly.JavaScript.variables_assignment = function (block) {
     }
   }
 
-    // Case 2.1: (a || arr[index]) = arr[index]
-    if (
-      (type_block_a === 'variables_get' || type_block_a === 'lists_getValueAtIndex') &&
-      type_block_b === 'lists_getValueAtIndex'
-    ) {
-      if (type_block_a === 'lists_getValueAtIndex') {
-        const result = getArrayAndIndex(a);
-        if (result === null) return '';
-        const { arrayName, index } = result;
-        if (memory[arrayName]?.type !== 'INT') {
-          return handleError('Type array is not match.', 'B');
-        }
-        memory[arrayName].value[index] = b;
+  let a_CodeCheckIndexValueOfArray = '';
+  // Case 2.1: (a || arr[index]) = arr[index]
+  if (
+    (type_block_a === 'variables_get' || type_block_a === 'lists_getValueAtIndex') &&
+    type_block_b === 'lists_getValueAtIndex'
+  ) {
+    if (type_block_a === 'lists_getValueAtIndex') {
+      const result = getArrayAndIndex(a);
+      if (result === null) return '';
+      const { arrayName, index } = result;
+      if (memory[arrayName]?.type !== 'INT') {
+        return handleError('Type array is not match.', 'B');
       }
-      if (type_block_a === 'variables_get') {
-        if (memory[a]?.type === 'INT') memory[a]['value'] = b;
-        else {
-          return handleError('Type mismatch or variable not assigned.', 'B');
-        }
+      memory[arrayName].value[index] = b;
+      a_CodeCheckIndexValueOfArray = `\n
+      if (${index} < 0 || ${index} >= ${arrayName}.length || isNaN(${index})) {
+        highlightBlock('${block.getInputTargetBlock('A').id || ''}');
+        throw new Error('Index ' + ${index} + ' is out of bounds for array ' + '${arrayName}' + ' with length ' + ${arrayName}.length);
+      } \n
+      `
+    }
+    if (type_block_a === 'variables_get') {
+      if (memory[a]?.type === 'INT') memory[a]['value'] = b;
+      else {
+        return handleError('Type mismatch or variable not assigned.', 'B');
       }
     }
+  }
 
   // Case 3: (a || arr[index]) = 'a'
   if (
@@ -210,7 +217,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
     })
 
     const params = Blockly.JavaScript.getFunctionParameters(b);
-    let c1 = "";  
+    let c1 = "";
     let c2 = "";
 
     for (let i = 0; i < params.length; i++) {
@@ -247,7 +254,7 @@ Blockly.JavaScript.variables_assignment = function (block) {
 
   if (type_block_b === 'lists_getValueAtIndex' || type_block_a === 'lists_getValueAtIndex') {
     const codeCheckIndexValueOfArray = localStorage.getItem('checkIndexValueOfArray');
-    addCodeCheckIndexValueOfArray = codeCheckIndexValueOfArray;
+    addCodeCheckIndexValueOfArray = a_CodeCheckIndexValueOfArray + codeCheckIndexValueOfArray;
   }
 
   // if (checkPassRef(memory, a)) a = a + '.val';
@@ -475,13 +482,10 @@ Blockly.JavaScript['lists_create_empty_v2'] = function (block) {
 Blockly.JavaScript['lists_getValueAtIndex'] = function (block) {
   const arrayName = block.getFieldValue('ARRAY');
   const index = Blockly.JavaScript.valueToCode(block, 'INDEX', Blockly.JavaScript.ORDER_NONE) || '0';
-  console.log({
-    haha: block
-  })
   const checkIndexValueOfArray = `\n
   if (${index} < 0 || ${index} >= ${arrayName}.length || isNaN(${index})) {
     highlightBlock('${block.id || ''}');
-    throw new Error('Index out of bounds');
+    throw new Error('Index ' + ${index} + ' is out of bounds for array ' + '${arrayName}' + ' with length ' + ${arrayName}.length);
   } \n
   `
   localStorage.setItem('checkIndexValueOfArray', checkIndexValueOfArray);
