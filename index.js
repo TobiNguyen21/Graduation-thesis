@@ -105,6 +105,10 @@ class Main {
         this.outputJsArea.value += this.isOutputChecked ?
           this.latestCode.replace(/highlightBlock\(.+\);/gi, '').replace(/\n\s*\n/g, '\n') :
           this.latestCode;
+        
+        console.log({
+          myLastest: this.latestCode
+        })
 
         this.highlightPause = false;
         try {
@@ -115,6 +119,9 @@ class Main {
               if (hasMore) {
                 setTimeout(this.runner, 10);
               } else {
+                console.log({
+                  outputValue: this.outputArea.value
+                })
                 this.outputArea.value += '\n\n<< Program complete >>';
                 this.resetInterpreter();
                 this.resetStepUi(false);
