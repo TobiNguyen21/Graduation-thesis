@@ -29,6 +29,10 @@ Blockly.JavaScript.variables_assignment = function (block) {
   const b = Blockly.JavaScript.removeDotVal(b_origin);
   let addCodeCheckIndexValueOfArray = null;
 
+  console.log({
+    type_block_b
+  });
+
   const getArrayAndIndex = (str) => {
     const matches = str.match(/([a-zA-Z_]\w*)\[(\d+)\]/);
     return matches && matches.length === 3 ? { arrayName: matches[1], index: parseInt(matches[2]) } : null;
@@ -302,6 +306,8 @@ Blockly.JavaScript['text_print'] = function (block) {
         window.alert("Variable not assigned");
         connectedBlock.dispose();
       }
+      const checkVar = `if (!${variable})  throw new Error('Value of variable "${variable}" is undefined');\n`;
+      return checkVar + code;
     }
 
     if (connectedBlock.type === 'lists_getValueAtIndex') {
@@ -646,6 +652,9 @@ Blockly.JavaScript.removeDotVal = function (str) {
 // Generator for main block
 Blockly.JavaScript['main_block'] = function (block) {
   const stackCode = Blockly.JavaScript.statementToCode(block, 'STACK');
+  // console.log({
+  //   l: Blockly.JavaScript.allVariableDeclare
+  // });
   let code = 'function main() {\n';
   code += stackCode;
   code += '}\n';
