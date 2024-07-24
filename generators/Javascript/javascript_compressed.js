@@ -49,6 +49,7 @@ Blockly.JavaScript.ORDER_OVERRIDES = [
     [Blockly.JavaScript.ORDER_LOGICAL_AND, Blockly.JavaScript.ORDER_LOGICAL_AND],
     [Blockly.JavaScript.ORDER_LOGICAL_OR, Blockly.JavaScript.ORDER_LOGICAL_OR]
 ];
+Blockly.JavaScript.allVariableDeclare = [];
 Blockly.JavaScript.isInitialized = !1;
 Blockly.JavaScript.init = function(a) {
     Blockly.JavaScript.definitions_ = Object.create(null);
@@ -58,6 +59,7 @@ Blockly.JavaScript.init = function(a) {
     for (var b = [], c = Blockly.Variables.allDeveloperVariables(a), d = 0; d < c.length; d++) b.push(Blockly.JavaScript.variableDB_.getName(c[d], Blockly.Names.DEVELOPER_VARIABLE_TYPE));
     a = Blockly.Variables.allUsedVarModels(a);
     for (d = 0; d < a.length; d++) b.push(Blockly.JavaScript.variableDB_.getName(a[d].getId(), Blockly.VARIABLE_CATEGORY_NAME));
+    Blockly.JavaScript.allVariableDeclare = b;
     // b.length && (Blockly.JavaScript.definitions_.variables = "var " + b.join(", ") + ";");
     this.isInitialized = !0
 };

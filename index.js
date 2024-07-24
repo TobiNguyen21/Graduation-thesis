@@ -124,7 +124,7 @@ class Main {
           this.runner();
         } catch (error) {
           console.error(error);
-          this.outputArea.value += `\n\n<< Error code>>`;
+          this.outputArea.value += `\n\n<< Error code>>:\n${error}`;
           this.resetInterpreter();
         }
       }, 1);
