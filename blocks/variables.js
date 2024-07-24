@@ -244,7 +244,7 @@ Blockly.Blocks['variables_array_declare'] = {
             .appendField(new Blockly.FieldDropdown([["int", "INT"], ["char", "CHAR"]]), "TYPE")
             .appendField(new Blockly.FieldTextInput(this.getNextArrayName()), "VAR")
             .appendField("[");
-        this.appendValueInput('LENGTH').setCheck('Number');
+        this.appendValueInput('LENGTH').setCheck(['Number', 'variables_get']);
         this.appendDummyInput().appendField("]");
         this.appendDummyInput().appendField(";");
         this.setInputsInline(true);
@@ -274,7 +274,7 @@ Blockly.Blocks['variables_array_initial'] = {
             .appendField(new Blockly.FieldDropdown([["int", "INT"], ["char", "CHAR"]]), "TYPE")
             .appendField(new Blockly.FieldTextInput(this.getNextArrayName()), "VAR")
             .appendField("[");
-        this.appendValueInput('LENGTH').setCheck('Number');
+        this.appendValueInput('LENGTH').setCheck(['Number', 'variables_get']);
         this.appendDummyInput().appendField("]").appendField("=");
         this.appendValueInput('ELEMENT');
         this.appendDummyInput().appendField(";");
