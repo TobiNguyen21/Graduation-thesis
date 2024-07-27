@@ -4,6 +4,16 @@ Blockly.JavaScript.errorHandler = function (block, msg, blockDispose = null) {
   return '';
 }
 
+//Using for catch error
+// function generateCodeWithCatchError(block, generateFunction) {
+//   try {
+//     return generateFunction(block);
+//   } catch (error) {
+//     console.error('Lỗi khi chuyển đổi khối:', error.message);
+//     return ['\'\'', Blockly.JavaScript.ORDER_ATOMIC];
+//   }
+// }
+
 // Generator for declaring variables
 Blockly.JavaScript.variables_declare = function (block) {
   const variable = Blockly.JavaScript.variableDB_.getName(block.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME);
@@ -670,9 +680,29 @@ Blockly.JavaScript.removeDotVal = function (str) {
   return str.replace('.val', '');
 }
 
+Blockly.JavaScript.checkUndeclaredVariable = function () {
+    const allBlocks = Blockly.getMainWorkspace().getAllBlocks();
+    const variablesDeclareBlocks = allBlocks.filter(block => block.type === 'variables_declare');
+    const variablesDeclareBlockNames = variablesDeclareBlocks.map(block =>  Blockly.JavaScript.variableDB_.getName(block.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME));
+
+    const variablesGetBlocks = allBlocks.filter(block => block.type === 'variables_get')
+    variablesGetBlocks.forEach(element => {
+      const varName = Blockly.JavaScript.variableDB_.getName(element.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME)
+      const varNameDelaredFound = variablesDeclareBlockNames.find(item => item == varName)
+      if (!varNameDelaredFound) {
+        element.setWarningText('Undeclared variable');
+        element.setEnabled(false);
+      } else {
+        element.setWarningText(null);
+        element.setEnabled(true);
+      }
+    });
+}
+
 // Generator for main block
 Blockly.JavaScript['main_block'] = function (block) {
   const stackCode = Blockly.JavaScript.statementToCode(block, 'STACK');
+  Blockly.JavaScript.checkUndeclaredVariable();
   let code = 'function main() {\n';
   code += stackCode;
   code += '}\n';

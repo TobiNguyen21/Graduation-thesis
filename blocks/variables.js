@@ -197,10 +197,19 @@ Blockly.Blocks['variables_declare'] = {
     },
     onchange: function (e) {
         const varName = this.getFieldValue("VAR");
+        const allSingleVar = Blockly.JavaScript.allVariableDeclare || [];
+        const singleVarFound = allSingleVar.find((element) => element == varName);
 
-        if (!this.isValidVariableName(varName)) {
-            this.setWarningText('Invalid variable name !');
+        if (
+            !this.isValidVariableName(varName) ||
+            (!this.isInFlyout && !singleVarFound)
+        ) {
+            const msg = !singleVarFound ? 'Please define variable' : 'Invalid variable name !';
+            this.setWarningText(msg);
             this.setEnabled(false);
+        } else {
+            this.setWarningText(null);
+            this.setEnabled(true);
         }
     }
 };
