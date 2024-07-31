@@ -4,6 +4,18 @@ Blockly.JavaScript.errorHandler = function (block, msg, blockDispose = null) {
   return '';
 }
 
+//Using for catch error
+// function generateCodeWithCatchError(generateFunction) {
+//   return function (block) {
+//     try {
+//       return generateFunction(block);
+//     } catch (error) {
+//       console.error('Lỗi khi chuyển đổi khối:', error.message);
+//       return ['\'\'', Blockly.JavaScript.ORDER_ATOMIC];
+//     }
+//   };
+// }
+
 // Generator for declaring variables
 Blockly.JavaScript.variables_declare = function (block) {
   const variable = Blockly.JavaScript.variableDB_.getName(block.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME);
@@ -30,9 +42,13 @@ Blockly.JavaScript.variables_assignment = function (block) {
   let addCodeCheckIndexValueOfArray = null;
 
   const getArrayAndIndex = (str) => {
-    const matches = str.match(/([a-zA-Z_]\w*)\[(\d+)\]/);
-    return matches && matches.length === 3 ? { arrayName: matches[1], index: parseInt(matches[2]) } : null;
-  }
+    const matches = str.match(/([a-zA-Z_]\w*)\[(\w+)\]/);
+    if (matches && matches.length === 3) {
+      const index = isNaN(matches[2]) ? matches[2] : parseInt(matches[2]);
+      return { arrayName: matches[1], index };
+    }
+    return null;
+  };
 
   const handleError = (msg, blockDispose = null) => {
     return Blockly.JavaScript.errorHandler(block, msg, blockDispose);
@@ -91,25 +107,45 @@ Blockly.JavaScript.variables_assignment = function (block) {
     (type_block_a === 'variables_get' || type_block_a === 'lists_getValueAtIndex') &&
     type_block_b === 'lists_getValueAtIndex'
   ) {
+    const arrB = getArrayAndIndex(b);
+    const arrNameB = arrB.arrayName;
+    const indexB = arrB.index;
     if (type_block_a === 'lists_getValueAtIndex') {
       const result = getArrayAndIndex(a);
       if (result === null) return '';
       const { arrayName, index } = result;
-      if (memory[arrayName]?.type !== 'INT') {
+      if (memory[arrayName]?.type !== memory[arrNameB]?.type) {
         return handleError('Type array is not match.', 'B');
       }
-      memory[arrayName].value[index] = b;
-      a_CodeCheckIndexValueOfArray = `\n
-      if (${index} < 0 || ${index} >= ${arrayName}.length || isNaN(${index})) {
-        highlightBlock('${block.getInputTargetBlock('A').id || ''}');
-        throw new Error('Index ' + ${index} + ' is out of bounds for array ' + '${arrayName}' + ' with length ' + ${arrayName}.length);
-      } \n
-      `
+      if (!isNaN(index)) {
+        memory[arrayName].value[index] = (isNaN(indexB)) ? 'pending' : memory[arrNameB]?.value[indexB];
+      }
+      if (arrayName == arrNameB) {
+        a_CodeCheckIndexValueOfArray = `\n
+        if (${index} < 0 || ${index} >= ${arrayName}.length || isNaN(${index})) {
+          highlightBlock('${block.getInputTargetBlock('A').id || ''}');
+          throw new Error('Index ' + ${index} + ' is out of bounds for array ' + '${arrayName}' + ' with length ' + ${arrayName}.length);
+        } \n
+        `
+      } else {
+        a_CodeCheckIndexValueOfArray = `\n
+        if (${index} < 0 || ${index} >= ${arrayName}.length || isNaN(${index})) {
+          highlightBlock('${block.getInputTargetBlock('A').id || ''}');
+          throw new Error('Index ' + ${index} + ' is out of bounds for array ' + '${arrayName}' + ' with length ' + ${arrayName}.length);
+        } \n
+        if (${indexB} < 0 || ${indexB} >= ${arrNameB}.length || isNaN(${indexB})) {
+          highlightBlock('${block.getInputTargetBlock('B').id || ''}');
+          throw new Error('Index ' + ${indexB} + ' is out of bounds for array ' + '${arrNameB}' + ' with length ' + ${arrNameB}.length);
+        } \n
+        `
+      }
+
     }
     if (type_block_a === 'variables_get') {
-      if (memory[a]?.type === 'INT') memory[a]['value'] = b;
-      else {
-        return handleError('Type mismatch or variable not assigned.', 'B');
+      if (memory[a]?.type === memory[arrNameB]?.type) {
+        memory[a]['value'] = (isNaN(indexB)) ? 'pending' : memory[arrNameB]?.value[indexB];
+      } else {
+        return handleError('Type mismatch or variable not assigned.wqd', 'B');
       }
     }
   }
@@ -340,7 +376,8 @@ Blockly.JavaScript['text_scanf'] = function (block) {
   if (dropdown_type === '%s') {
     return value_text + ` = window.prompt('${msgData}');\n`;
   } else if (dropdown_type === '%d') {
-    return value_text + ` = parseInt(window.prompt('${msgData}'));\n`;
+    const midCheckValue = `if (${value_text} !== 0 && isNaN(${value_text})) throw new Error('Input value error, please enter a number for ${value_text} variable');\n`;
+    return value_text + ` = parseInt(window.prompt('${msgData}'));\n` + midCheckValue;
   } else if (dropdown_type === '%c') {
     return value_text + ` = window.prompt('${msgData}')[0];\n`;
   }
@@ -528,6 +565,7 @@ Blockly.JavaScript['controls_for'] = function (block) {
   const valueBy = Blockly.JavaScript.valueToCode(block, 'BY', Blockly.JavaScript.ORDER_ASSIGNMENT) || `${variableVar} ++`;
   const statementsDo = Blockly.JavaScript.statementToCode(block, 'DO');
 
+  Blockly_variablesDeclareInFunc.push(variableVar);
   let memory = JSON.parse(localStorage.getItem('memory')) || {};
   memory[variableVar] = {
     type: 'INT',
@@ -645,9 +683,62 @@ Blockly.JavaScript.removeDotVal = function (str) {
   return str.replace('.val', '');
 }
 
+Blockly.JavaScript.varsName = [];
+Blockly.JavaScript.reloadDeclaredVariableList = function () {
+  const allBlocks = Blockly.getMainWorkspace().getAllBlocks();
+  Blockly.getMainWorkspace().addChangeListener(e => {
+    if (!this.isInFlyout && e.type === Blockly.Events.BLOCK_DELETE) {
+      const idsBlock = e.ids || [];
+      idsBlock.forEach(id => {
+        const block = allBlocks.find(block => block.id === id);
+        if (block?.type === 'procedures_defnoreturn' || block?.type === 'procedures_defreturn') {
+          const varsName = block.arguments_;
+          Blockly.JavaScript.varsName = varsName;
+          for (let i = Blockly_variablesDeclareInFunc.length - 1; i >= 0; i--) {
+            if (varsName.includes(Blockly_variablesDeclareInFunc[i])) {
+              Blockly_variablesDeclareInFunc.splice(i, 1);
+            }
+          }
+        }
+
+        if (block?.type === 'controls_for') {
+          const varsName = Blockly.JavaScript.varsName;
+          for (let i = Blockly_variablesDeclareInFunc.length - 1; i >= 0; i--) {
+            if (!varsName.includes(Blockly_variablesDeclareInFunc[i])) {
+              Blockly_variablesDeclareInFunc.splice(i, 1);
+            }
+          }
+        }
+      })
+    }
+  })
+}
+
+Blockly.JavaScript.checkUndeclaredVariable = function () {
+  const allBlocks = Blockly.getMainWorkspace().getAllBlocks();
+  const variablesDeclareBlocks = allBlocks.filter(block => block.type === 'variables_declare');
+  const variablesDeclareBlockNames = variablesDeclareBlocks.map(block => Blockly.JavaScript.variableDB_.getName(block.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME));
+
+  Blockly.JavaScript.reloadDeclaredVariableList();
+
+  const variablesGetBlocks = allBlocks.filter(block => block.type === 'variables_get')
+  variablesGetBlocks.forEach(element => {
+    const varName = Blockly.JavaScript.variableDB_.getName(element.getFieldValue("VAR"), Blockly.VARIABLE_CATEGORY_NAME)
+    const varNameDelaredFound = [...variablesDeclareBlockNames, ...Blockly_variablesDeclareInFunc].find(item => item == varName)
+    if (!varNameDelaredFound) {
+      element.setWarningText('Undeclared variable');
+      element.setEnabled(false);
+    } else {
+      element.setWarningText(null);
+      element.setEnabled(true);
+    }
+  });
+}
+
 // Generator for main block
 Blockly.JavaScript['main_block'] = function (block) {
   const stackCode = Blockly.JavaScript.statementToCode(block, 'STACK');
+  Blockly.JavaScript.checkUndeclaredVariable();
   let code = 'function main() {\n';
   code += stackCode;
   code += '}\n';

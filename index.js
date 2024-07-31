@@ -198,6 +198,10 @@ class Main {
         const file = input.files[0];
         const reader = new FileReader();
 
+        // Clear all blocks in the trash can
+        const trashCanBlocks = this.demoWorkspace.getTopBlocks(true);
+        trashCanBlocks.forEach(block => block.dispose());
+
         reader.onload = function (event) {
           try {
             const fileContent = event.target.result;
@@ -211,6 +215,7 @@ class Main {
 
               const xml = Blockly.Xml.textToDom(xmlString);
               this.demoWorkspace.clear();
+              Blockly.JavaScript.checkUndeclaredVariable();
               Blockly.Xml.domToWorkspace(xml, this.demoWorkspace);
 
               const fileName = file.name.replace(/\.[^.]+$/, "");

@@ -159,6 +159,7 @@ Blockly.Blocks.text_scanf = {
         const memory = JSON.parse(localStorage.getItem('memory'));
         const arrayName = connectedBlock.getField("ARRAY").value_;
         const index = +(Blockly.JavaScript.valueToCode(connectedBlock, 'INDEX', Blockly.JavaScript.ORDER_NONE)) || 0;
+        const typeOfIndexArrCurrent = connectedBlock.getInput('INDEX')?.connection?.targetConnection?.sourceBlock_?.type;
 
         if (arrayName !== Blockly.Msg.SELECT_VALUE) {
           if (memory[arrayName]?.type === 'INT')
@@ -167,14 +168,16 @@ Blockly.Blocks.text_scanf = {
             this.getField('TYPE').setValue('%c');
 
           const arr = memory[arrayName]?.value ? (memory[arrayName].value) : null;
-          if (arr[index] === undefined) {
-            window.alert("Variable not assigned 1");
+          if (arr[index] === undefined && typeOfIndexArrCurrent != "variables_get") {
+            window.alert(`Variable not assigned index: ${index}`);
             connectedBlock.dispose();
             return '';
           }
-          arr[index] = Blockly.Msg.PENDING_VALUE;
-          memory[arrayName].value = arr;
-          localStorage.setItem('memory', JSON.stringify(memory));
+          if (typeOfIndexArrCurrent != "variables_get") {
+            arr[index] = Blockly.Msg.PENDING_VALUE;
+            memory[arrayName].value = arr;
+            localStorage.setItem('memory', JSON.stringify(memory));
+          }
         }
       }
       else {

@@ -64,6 +64,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     },
     updateParams_: function () {
         var params = this.arguments_.map((arg, index) => {
+            Blockly_variablesDeclareInFunc.push(arg)
             if (this.types_[index] == "INT_ARRAY" || this.types_[index] == "CHAR_ARRAY") {
                 return this.types_[index].replace(/_ARRAY/g, "") + " " + arg + " " + "[ ]";
             }
